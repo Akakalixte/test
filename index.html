@@ -88,8 +88,8 @@ html,body{
 
 <div id="scareWrap" role="dialog" aria-hidden="true">
   <img id="scareImg" alt="scare" src="" />
-  <div id="red" class="overlay" style="display:none"></div>
-  <div id="white" class="overlay" style="display:none"></div>
+  <div id="red" class="overlay"></div>
+  <div id="white" class="overlay"></div>
 </div>
 
 <script>
@@ -107,7 +107,7 @@ const scareImg = document.getElementById('scareImg');
 const red = document.getElementById('red');
 const white = document.getElementById('white');
 
-promptArea.addEventListener('click', async () => {
+promptArea.addEventListener('click', () => {
   // plein écran
   if(document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen().catch(()=>{});
@@ -116,42 +116,32 @@ promptArea.addEventListener('click', async () => {
   // hide prompt
   promptArea.style.display = 'none';
 
-  // jouer uniquement le son GitHub
+  // montrer jumpscare et lancer son en boucle instantanément
+  scareImg.src = gifUrl;
+  scareWrap.style.display = 'flex';
+
   const scareAudio = new Audio(audioUrl);
+  scareAudio.loop = true;
   scareAudio.volume = 1.0;
   scareAudio.play().catch(()=>{});
 
-  // show jumpscare image
-  setTimeout(()=>{
-    scareImg.src = gifUrl;
-    scareWrap.style.display = 'flex';
-  }, 150);
-
-  // flash initial intense
-  setTimeout(()=>{
-    white.style.display = 'block';
-    white.classList.remove('whitePulse'); void white.offsetWidth;
-    white.classList.add('whitePulse');
-    red.style.display = 'block';
-    red.classList.remove('redPulse'); void red.offsetWidth;
-    red.classList.add('redPulse');
-    setTimeout(()=>{
-      white.style.display = 'none';
-      red.style.display = 'none';
-    }, 500);
-  }, 150);
+  // flashs instantanés
+  red.style.display = 'block';
+  red.classList.remove('redPulse'); void red.offsetWidth;
+  red.classList.add('redPulse');
+  white.style.display = 'block';
+  white.classList.remove('whitePulse'); void white.offsetWidth;
+  white.classList.add('whitePulse');
 
   // pulses réguliers
-  let t = 150;
+  let t = 0;
   for (let s of pulseSequence) {
     setTimeout(()=> triggerPulse(s.type), t);
     t += s.delay;
   }
 
-  // tremblement synchronisé avec moment du gif
-  setTimeout(()=>{
-    scareImg.classList.add('shake');
-  }, 800);
+  // tremblement synchronisé
+  scareImg.classList.add('shake');
 });
 
 function triggerPulse(type){
@@ -170,4 +160,3 @@ function triggerPulse(type){
 </script>
 </body>
 </html>
-
