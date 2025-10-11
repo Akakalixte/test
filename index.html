@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8" />
@@ -6,7 +6,7 @@
 <title>Deus — Animam — Tuam — Servet</title>
 <style>
 html,body {
-  height: 100%;
+  height: 200%; /* pour permettre le scroll */
   margin: 0;
   background: #000;
   color: #fff;
@@ -29,7 +29,8 @@ html,body {
   backdrop-filter: blur(6px);
   text-align: center;
   transition: transform 0.15s ease-out;
-  pointer-events: none;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 #floatingBox .main {
@@ -60,24 +61,26 @@ html,body {
   background: #000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1.5s ease;
-  z-index: 1000;
+  transition: opacity 1s ease;
+  z-index: 100;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
-/* Contenu du noir avec GUI stylisé */
+/* GUI titre avec glow */
 #blackContent {
   text-align: center;
-  opacity: 0; /* apparition progressive */
+  opacity: 0;
+  transform: translateY(0px);
+  transition: opacity 1.5s ease, transform 1.5s ease;
   background: rgba(20,20,20,0.6);
   padding: 30px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
-  transition: opacity 0.5s ease;
+  position: relative;
 }
 
 .title {
@@ -138,7 +141,7 @@ let mouseY = window.innerHeight / 2;
 let currentX = mouseX;
 let currentY = mouseY;
 
-// suivi de la souris limité
+// suivi de la souris limité pour le premier GUI
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
@@ -156,35 +159,29 @@ function animate() {
 }
 animate();
 
-// apparition progressive du GUI
-function fadeInGUI() {
-  let opacity = 0;
-  const interval = setInterval(() => {
-    opacity += 0.02;
-    if(opacity >= 1){
-      opacity = 1;
-      clearInterval(interval);
-    }
-    blackContent.style.opacity = opacity;
-  }, 20);
-}
-
-// transition au clic
+// clic sur le premier GUI : affichage écran noir + GUI titre
 document.addEventListener('click', () => {
+  // faire apparaître l'écran noir
   blackScreen.style.pointerEvents = 'auto';
   blackScreen.style.opacity = '1';
-  fadeInGUI();
+
+  // faire apparaître le GUI titre progressivement
+  setTimeout(() => {
+    blackContent.style.opacity = '1';
+  }, 300);
 });
 
-// effet de scroll : plus on scroll, plus le GUI disparaît
+// scroll : GUI titre monte et disparaît
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
-  const fadeStart = 50; // scrollY à partir duquel commence le fondu
-  const fadeEnd = 300; // scrollY à partir duquel GUI est totalement invisible
+  const fadeStart = 0;
+  const fadeEnd = 300;
 
-  let opacity = 1 - (scrollY - fadeStart) / (fadeEnd - fadeStart);
-  opacity = Math.max(0, Math.min(1, opacity));
-  blackContent.style.opacity = opacity;
+  let progress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
+  progress = Math.min(Math.max(progress, 0), 1);
+
+  blackContent.style.opacity = 1 - progress;
+  blackContent.style.transform = `translateY(${-progress * 100}px)`;
 });
 </script>
 </body>
