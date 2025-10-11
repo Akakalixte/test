@@ -1,205 +1,171 @@
 <!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Deus — Animam — Tuam — Servet</title>
-<style>
-html,body {
-  height: 100%;
-  margin: 0;
-  background: #000;
-  color: #fff;
-  font-family: 'Times New Roman', serif;
-  overflow-x: hidden;
-  cursor: none;
-}
-
-/* Premier GUI */
-#floatingBox {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(20, 20, 20, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 25px 40px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-  text-align: center;
-  pointer-events: auto;
-  z-index: 10;
-}
-
-#floatingBox .main { font-size: 26px; letter-spacing: 2px; margin-bottom: 8px; }
-#floatingBox .sub { font-size: 14px; color: #ccc; font-style: italic; }
-#floatingBox .definition { margin-top: 8px; font-size: 13px; color: #999; line-height: 1.5; font-style: italic; max-width: 500px; }
-
-/* Écran noir et scrollable */
-#blackScreen {
-  position: relative;
-  width: 100%;
-  min-height: 200vh; /* hauteur doublée pour permettre le scroll */
-  background: #000;
-  pointer-events: auto;
-  z-index: 100;
-}
-
-/* GUI titre */
-#blackContent {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  opacity: 0;
-  transition: opacity 1.5s ease, transform 1s ease;
-  background: rgba(20,20,20,0.6);
-  padding: 30px 50px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-}
-
-.title {
-  font-size: 48px;
-  letter-spacing: 4px;
-  color: #fff;
-  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  font-size: 18px;
-  letter-spacing: 1.5px;
-  color: #ccc;
-  font-style: italic;
-  position: relative;
-}
-.subtitle::after {
-  content: "";
-  display: block;
-  width: 140px;
-  height: 1px;
-  background: rgba(255,255,255,0.3);
-  margin: 6px auto 0;
-}
-
-/* Petits GUI après scroll */
-.smallGUIs {
-  position: fixed;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  z-index: 50;
-}
-.smallGUIs .gui {
-  background: rgba(30,30,30,0.6);
-  padding: 15px 25px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 0 10px rgba(255,255,255,0.05);
-  color: #eee;
-  font-size: 16px;
-  letter-spacing: 1px;
-  font-style: italic;
-}
-</style>
-</head>
-<body>
-
-<div id="floatingBox">
-  <div class="main">Click here...</div>
-  <div class="sub">Deus — animam — tuam — servet</div>
-  <div class="definition">
-    A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
-    is an excessive fear of a specific object or situation that is based on feelings rather than rational causes.
-  </div>
-</div>
-
-<div id="blackScreen">
-  <div id="blackContent">
-    <div class="title">Akakalixte</div>
-    <div class="subtitle">Phobia est Arma</div>
-  </div>
-  <div class="smallGUIs" id="smallGUIs">
-    <div class="gui">GUI 1</div>
-    <div class="gui">GUI 2</div>
-    <div class="gui">GUI 3</div>
-    <div class="gui">GUI 4</div>
-  </div>
-</div>
-
-<script>
-const box = document.getElementById('floatingBox');
-const blackScreen = document.getElementById('blackScreen');
-const blackContent = document.getElementById('blackContent');
-const smallGUIs = document.getElementById('smallGUIs');
-
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let currentX = mouseX;
-let currentY = mouseY;
-
-// suivi de la souris pour le premier GUI
-document.addEventListener('mousemove', e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
-
-function animate() {
-  currentX += (mouseX - currentX) * 0.03;
-  currentY += (mouseY - currentY) * 0.03;
-
-  const offsetX = (currentX - window.innerWidth / 2) * 0.05;
-  const offsetY = (currentY - window.innerHeight / 2) * 0.05;
-
-  box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
-  requestAnimationFrame(animate);
-}
-animate();
-
-// clic sur le premier GUI
-document.addEventListener('click', () => {
-  box.style.display = 'none';
-  document.body.style.overflowY = 'scroll';
-  blackScreen.style.pointerEvents = 'auto';
-  blackScreen.style.opacity = '1';
-
-  setTimeout(() => {
-    blackContent.style.opacity = '1';
-  }, 300);
-});
-
-// scroll : GUI titre monte et disparaît progressivement
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  const fadeStart = 0;
-  const fadeEnd = 300;
-
-  let progress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
-  progress = Math.min(Math.max(progress, 0), 1);
-
-  blackContent.style.opacity = 1 - progress;
-  blackContent.style.transform = `translate(-50%, calc(-50% - ${progress * 100}px))`;
-
-  // petits GUI apparaissent après disparition du titre
-  if(progress >= 1) {
-    smallGUIs.style.opacity = '1';
-  } else {
-    smallGUIs.style.opacity = '0';
+  <html lang="fr">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Deus — Animam — Tuam — Servet</title>
+  <style>
+  html,body {
+    height: 100%;
+    margin: 0;
+    background: #000;
+    color: #fff;
+    font-family: 'Times New Roman', serif;
+    overflow: hidden;
+    cursor: none;
   }
-});
-</script>
-</body>
-</html>
+  
+  /* Conteneur du texte d'accueil */
+  #floatingBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 25px 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.05);
+    backdrop-filter: blur(6px);
+    text-align: center;
+    transition: transform 0.15s ease-out;
+    pointer-events: none;
+  }
+  
+  #floatingBox .main {
+    font-size: 26px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  
+  #floatingBox .sub {
+    font-size: 14px;
+    color: #ccc;
+    font-style: italic;
+  }
+  
+  #floatingBox .definition {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #999;
+    line-height: 1.5;
+    font-style: italic;
+    max-width: 500px;
+  }
+  
+  /* Écran noir après clic */
+  #blackScreen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Contenu du noir avec GUI stylisé */
+  #blackContent {
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+    animation-delay: 0.8s;
+    background: rgba(20,20,20,0.6);
+    padding: 30px 50px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 0 30px rgba(255,255,255,0.05);
+    backdrop-filter: blur(6px);
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  
+  .title {
+    font-size: 48px;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px #fff,
+      0 0 30px #fff;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    color: #ccc;
+    font-style: italic;
+    position: relative;
+  }
+  
+  .subtitle::after {
+    content: "";
+    display: block;
+    width: 140px;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+    margin: 6px auto 0;
+  }
+  </style>
+  </head>
+  <body>
+  
+  <div id="floatingBox">
+    <div class="main">Click here...</div>
+    <div class="sub">Deus — animam — tuam — servet</div>
+    <div class="definition">
+      A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
+      is an excessive fear of a specific object or situation that is based on feelings rather than rational causes.
+    </div>
+  </div>
+  
+  <div id="blackScreen">
+    <div id="blackContent">
+      <div class="title">Akakalixte</div>
+      <div class="subtitle">Phobia est Arma</div>
+    </div>
+  </div>
+  
+  <script>
+  const box = document.getElementById('floatingBox');
+  const blackScreen = document.getElementById('blackScreen');
+  const blackContent = document.getElementById('blackContent');
+  
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let currentX = mouseX;
+  let currentY = mouseY;
+  
+  // suivi de la souris limité
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+  
+  function animate() {
+    currentX += (mouseX - currentX) * 0.03;
+    currentY += (mouseY - currentY) * 0.03;
+  
+    const offsetX = (currentX - window.innerWidth / 2) * 0.05;
+    const offsetY = (currentY - window.innerHeight / 2) * 0.05;
+  
+    box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+    requestAnimationFrame(animate);
+  }
+  animate();
+  
+  // transition au clic
+  document.addEventListener('click', () => {
+    blackScreen.style.pointerEvents = 'auto';
+    blackScreen.style.opacity = '1';
+  });
+  </script>
+  </body>
+  </html>
