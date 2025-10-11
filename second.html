@@ -12,9 +12,9 @@ html, body {
   color: #fff;
   font-family: 'Times New Roman', serif;
   overflow-x: hidden;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
-body::-webkit-scrollbar { display: none; } /* Chrome, Safari, Edge */
+body::-webkit-scrollbar { display: none; }
 
 /* Conteneur du titre principal */
 #titleContainer {
@@ -30,7 +30,7 @@ body::-webkit-scrollbar { display: none; } /* Chrome, Safari, Edge */
   backdrop-filter: blur(6px);
   text-align: center;
   opacity: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.1s linear, transform 0.1s linear;
   z-index: 10;
 }
 
@@ -63,8 +63,8 @@ body::-webkit-scrollbar { display: none; } /* Chrome, Safari, Edge */
 
 /* Conteneur des 4 GUI */
 #fourContainers {
-  position: absolute;
-  top: 120%; /* démarre juste sous le titre pour raccord */
+  position: fixed;
+  top: calc(50% + 140px); /* commence juste sous le titre */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -72,7 +72,8 @@ body::-webkit-scrollbar { display: none; } /* Chrome, Safari, Edge */
   gap: 30px;
   text-align: center;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.1s linear, transform 0.1s linear;
+  z-index: 9;
 }
 
 .smallGui {
@@ -106,32 +107,23 @@ body::-webkit-scrollbar { display: none; } /* Chrome, Safari, Edge */
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-let lastScrollY = window.scrollY;
-
-// seuil minimal pour déclencher l'animation (moins sensible)
-const scrollThreshold = 15;
+// paramètres scroll
+const fadeDistance = 300; // distance de scroll pour la transition complète
+const containerOffset = 140; // offset entre titre et premiers GUI
 
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
 
-  if(scrollY > lastScrollY + scrollThreshold) {
-    // Scroll vers le bas -> titre monte et disparaît, 4 GUI apparaissent
-    const progress = Math.min((scrollY / 300), 1); // fade proportionnel
-    titleContainer.style.transform = `translate(-50%, ${-50 - progress*100}%)`;
-    titleContainer.style.opacity = `${1 - progress}`;
+  // calcul de la progression (0 = haut, 1 = fin fade)
+  let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
 
-    if(progress >= 0.1) fourContainers.style.opacity = '1';
-  } 
-  else if(scrollY < lastScrollY - scrollThreshold) {
-    // Scroll vers le haut -> titre revient, 4 GUI disparaissent
-    const progress = Math.min((scrollY / 300), 1);
-    titleContainer.style.transform = `translate(-50%, ${-50 - progress*100}%)`;
-    titleContainer.style.opacity = `${1 - progress}`;
+  // titre : monte et disparait
+  titleContainer.style.transform = `translate(-50%, ${-50 - progress*100}%)`;
+  titleContainer.style.opacity = `${1 - progress}`;
 
-    if(progress < 0.1) fourContainers.style.opacity = '0';
-  }
-
-  lastScrollY = scrollY;
+  // 4 GUI : apparaissent progressivement juste après le titre
+  fourContainers.style.transform = `translateX(-50%) translateY(${progress*50}px)`; 
+  fourContainers.style.opacity = `${progress}`;
 });
 </script>
 </body>
