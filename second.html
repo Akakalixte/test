@@ -113,20 +113,28 @@ const guiMove = 40;         // pixels que les 4 GUI descendent
 window.addEventListener('scroll', () => {
   let scrollY = window.scrollY;
 
-  // Scroll infini : on boucle la progression entre 0 et fadeDistance
+  // Progression de 0 à 1 pour chaque cycle
   let progress = (scrollY % fadeDistance) / fadeDistance;
 
-  // Titre : monte et disparaît
-  titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * titleMove}px))`;
-  titleContainer.style.opacity = `${1 - progress}`;
+  // Synchronisation : titre visible si progress < 0.5, GUI si progress >= 0.5
+  if (progress < 0.5) {
+    // fade titre
+    let titleProgress = progress * 2; // remap 0-0.5 => 0-1
+    titleContainer.style.transform = `translate(-50%, calc(-50% - ${titleProgress * titleMove}px))`;
+    titleContainer.style.opacity = `${1 - titleProgress}`;
 
-  // 4 GUI : apparaissent progressivement juste après le titre
-  fourContainers.style.transform = `translateX(-50%) translateY(${progress * guiMove}px)`;
-  fourContainers.style.opacity = `${progress}`;
+    // cacher les 4 GUI
+    fourContainers.style.opacity = 0;
+  } else {
+    // fade GUI
+    let guiProgress = (progress - 0.5) * 2; // remap 0.5-1 => 0-1
+    fourContainers.style.transform = `translateX(-50%) translateY(${guiProgress * guiMove}px)`;
+    fourContainers.style.opacity = `${guiProgress}`;
+
+    // cacher le titre
+    titleContainer.style.opacity = 0;
+  }
 });
 </script>
-</body>
-</html>
-
 </body>
 </html>
