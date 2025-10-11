@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Click if you dare</title>
+<style>
+  :root{--bg:#050406;--text:#ddd}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
+  .center{
+    height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;
+  }
+  .card{max-width:720px;text-align:center}
+  h1{font-size:28px;margin:0 0 12px}
+  p{margin:0 0 18px;opacity:.85}
+  .btn{
+    background:#111;border:1px solid #333;padding:12px 20px;border-radius:10px;color:var(--text);
+    cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.6);font-weight:600;
+  }
+  /* full screen scary container (hidden initially) */
+  #scare {
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:black;z-index:9999;
+  }
+  #scare img{max-width:100%;max-height:100%;object-fit:cover;filter:contrast(1.2) saturate(1.2)}
+  /* quick flash effect */
+  .flash {
+    position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;mix-blend-mode:overlay;
+    animation:flashAnim .45s ease-in-out 1 forwards;
+  }
+  @keyframes flashAnim{
+    0%{opacity:0}
+    30%{opacity:1}
+    100%{opacity:0}
+  }
+  /* small safety checkbox */
+  .safety{margin-top:12px;font-size:13px;opacity:.9}
+  .small{font-size:12px;color:#bbb;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="center">
+    <div class="card">
+      <h1>Tu oses cliquer ?</h1>
+      <p>Cette page est conçue pour surprendre. Si la personne a des problèmes cardiaques, anxieux ou est mineure, ne clique pas.</p>
+
+      <!-- Safety checkbox — supprime la div entière si tu veux un piège immédiat -->
+      <label class="safety"><input id="consent" type="checkbox" /> Je confirme que la personne ciblée ne présente pas de risque médical</label>
+
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+        <button id="go" class="btn" disabled>Cliquer pour voir</button>
+        <button id="fast" class="btn" style="opacity:.9">Mode rapide (pas de confirmation)</button>
+      </div>
+      <div class="small">Astuce : Remplace l'image dans le code par celle que tu veux (URL dans la variable `scaryImage`).</div>
+    </div>
+  </div>
+
+  <!-- full screen scare -->
+  <div id="scare" role="dialog" aria-hidden="true">
+    <div class="flash"></div>
+    <img id="scareImg" alt="image" src="" />
+  </div>
+
+<script>
+/*
+  scaretastic v1
+  - Remplace scaryImage par l'URL de ton image effrayante (plein écran).
+  - Le son est généré via WebAudio (sweep + bruit bref).
+  - Le jump-scare déclenche flash + son + image pleine.
+  - Déclenchement possible après clic ; pour déclenchement automatique supprime la requête checkbox et appelle triggerScare() là où tu veux.
+*/
+
+// ===== CONFIG =====
+const scaryImage = "https://i.imgur.com/3Z8bQ8w.jpg"; // remplace par ton image (ex: hébergée sur imgur / i.imgur.com / telegra.ph)
+const delayBeforeScareMs = 400; // délai entre clic et l'apparition (ms) — petit délai rend le sursaut plus fort
+// ==================
+
+const consent = document.getElementById('consent');
+const go = document.getElementById('go');
+const fast = document.getElementById('fast');
+
+consent.addEventListener('change', ()=> go.disabled = !consent.checked);
+fast.addEventListener('click', ()=>{
+  // mode rapide : bypass la confirmation (toujours afficher l'avertissement au moins)
+  triggerScare();
+});
+
+// déclencheur principal (bouton)
+go.addEventListener('click', ()=> triggerScare());
+
+// function qui joue le son (WebAudio) : court sweep + bruit
+function playScarySound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+
+    // short white noise burst
+    const bufferSize = ctx.sampleRate * 0.2; // 0.2s
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize); // fade out
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.0, now);
+    noiseGain.gain.linearRampToValueAtTime(1.0, now + 0.01);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+    noise.connect(noiseGain).connect(ctx.destination);
+
+    // short frequency sweep (scream-ish)
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.18);
+    oscGain.gain.setValueAtTime(0.0001, now);
+    oscGain.gain.linearRampToValueAtTime(0.9, now + 0.02);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+    osc.connect(oscGain).connect(ctx.destination);
+
+    noise.start(now);
+    osc.start(now);
+    // stop after short time
+    noise.stop(now + 0.21);
+    osc.stop(now + 0.21);
+  } catch (e) {
+    // fallback silence
+    console.warn("Audio failed:", e);
+  }
+}
+
+function triggerScare(){
+  // show full screen container
+  const scare = document.getElementById('scare');
+  const img = document.getElementById('scareImg');
+  img.src = scaryImage;
+  // small delay for suspense
+  setTimeout(()=>{
+    // flash overlay (restarts animation)
+    const flash = document.querySelector('.flash');
+    flash.style.animation = 'none';
+    // force reflow to restart
+    void flash.offsetWidth;
+    flash.style.animation = '';
+    scare.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    playScarySound();
+    // hide after a short time so c'est pas traumatisant
+    setTimeout(()=> {
+      scare.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 1500);
+  }, delayBeforeScareMs);
+}
+
+// ---- optional: automatic trigger on page load (DANGEROUS) ----
+// If you really want it to trigger without any click, uncomment the line below.
+// But be careful: many browsers block audio without user interaction.
+/*
+// window.addEventListener('load', ()=> {
+//   setTimeout(()=> triggerScare(), 1200); // trigger 1.2s after load
+// });
+*/
+
+</script>
+</body>
+</html>
