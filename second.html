@@ -8,7 +8,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 200%; /* pour permettre le scroll */
+  height: 200%; /* permet le scroll */
   background: #000;
   font-family: 'Times New Roman', serif;
   color: #fff;
@@ -18,7 +18,7 @@ html, body {
 
 /* GUI titre */
 #titleContainer {
-  position: fixed; /* reste visible et centré */
+  position: fixed; /* reste centré */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -79,20 +79,16 @@ window.addEventListener('load', () => {
   titleContainer.style.opacity = '1';
 });
 
-// Scroll effect
-let lastScrollY = window.scrollY;
+// Scroll effect : disparaît complètement vers le haut
+const fadeDistance = window.innerHeight; // titre sort entièrement de l'écran
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
-  const fadeDistance = 300; // distance pour fade-out
-
   let progress = scrollY / fadeDistance;
   progress = Math.min(Math.max(progress, 0), 1);
 
-  // Opacité et translation
+  // Opacité et translation complètes
   titleContainer.style.opacity = 1 - progress;
-  titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * 100}px))`;
-
-  lastScrollY = scrollY;
+  titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * window.innerHeight}px))`;
 });
 </script>
 </body>
