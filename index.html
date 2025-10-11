@@ -6,18 +6,18 @@
 <title>Deus — Animam — Tuam — Servet</title>
 <style>
 html,body {
-  height: 200%; /* pour permettre le scroll */
+  height: 100%; /* hauteur normale pour cacher le scroll */
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  overflow-x: hidden;
+  overflow: hidden; /* <-- cache la barre de scroll du navigateur */
   cursor: none;
 }
 
-/* Conteneur du texte d'accueil */
+/* Conteneur du texte d'accueil (premier GUI) */
 #floatingBox {
-  position: absolute;
+  position: fixed; /* <-- reste toujours à sa place, pas soumis au scroll */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -161,11 +161,9 @@ animate();
 
 // clic sur le premier GUI : affichage écran noir + GUI titre
 document.addEventListener('click', () => {
-  // faire apparaître l'écran noir
   blackScreen.style.pointerEvents = 'auto';
   blackScreen.style.opacity = '1';
 
-  // faire apparaître le GUI titre progressivement
   setTimeout(() => {
     blackContent.style.opacity = '1';
   }, 300);
@@ -186,4 +184,3 @@ window.addEventListener('scroll', () => {
 </script>
 </body>
 </html>
-
