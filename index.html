@@ -90,11 +90,11 @@ const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif";
 const audioUrl = "https://github.com/Akakalixte/sound-for-test/raw/refs/heads/main/Scary%20Scream%20Prank!%20%5BTubeRipper.com%5D.mp3";
 
 const colors = [
-  'rgba(255,255,255,0.6)',
-  'rgba(255,0,0,0.5)',
-  'rgba(0,0,0,0.5)',
-  'rgba(255,0,0,0.6)',
-  'rgba(255,255,255,0.4)'
+  'rgba(255,255,255,1)',
+  'rgba(255,0,0,0.8)',
+  'rgba(0,0,0,1)',
+  'rgba(255,255,255,0.9)',
+  'rgba(255,0,0,0.7)'
 ];
 
 const words = ["HELP", "RUN", "STOP", "DIE", "NO ESCAPE", "WHY", "PLEASE", "LOOK"];
@@ -108,6 +108,7 @@ promptArea.addEventListener('click', () => {
   if(document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen().catch(()=>{});
   }
+
   promptArea.style.display = 'none';
   scareImg.src = gifUrl;
   scareWrap.style.display = 'flex';
@@ -117,21 +118,27 @@ promptArea.addEventListener('click', () => {
   scareAudio.volume = 1.0;
   scareAudio.play().catch(()=>{});
 
-  flashLoop();
+  startInitialFlashes();
 });
 
-function flashLoop(){
-  const c = colors[Math.floor(Math.random() * colors.length)];
-  flash.style.background = c;
-  flash.style.opacity = 1;
+function startInitialFlashes(){
+  let flashes = 0;
+  const maxFlashes = 20; // nombre de flashs rapides (~1.5s)
 
-  showRandomWord();
+  const flashInterval = setInterval(() => {
+    const c = colors[Math.floor(Math.random() * colors.length)];
+    flash.style.background = c;
+    flash.style.opacity = 1;
+    showRandomWord();
+    setTimeout(() => {
+      flash.style.opacity = 0;
+    }, 80);
+    flashes++;
 
-  setTimeout(() => {
-    flash.style.opacity = 0;
+    if(flashes >= maxFlashes){
+      clearInterval(flashInterval);
+    }
   }, 100);
-
-  setTimeout(flashLoop, 150 + Math.random()*200);
 }
 
 function showRandomWord(){
@@ -150,10 +157,7 @@ function showRandomWord(){
   word.style.transform = `rotate(${rot}deg)`;
 
   document.body.appendChild(word);
-
-  setTimeout(() => {
-    word.remove();
-  }, 120 + Math.random()*80);
+  setTimeout(() => word.remove(), 100);
 }
 </script>
 </body>
