@@ -19,8 +19,8 @@ body::-webkit-scrollbar { display: none; }
 /* Conteneur titre */
 #titleContainer {
   position: fixed;
-  left: 50%;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(20, 20, 20, 0.6);
   padding: 40px 60px;
@@ -30,8 +30,8 @@ body::-webkit-scrollbar { display: none; }
   backdrop-filter: blur(6px);
   text-align: center;
   opacity: 1;
-  transition: opacity 0.1s linear, transform 0.1s linear;
   z-index: 10;
+  transition: transform 0.1s linear, opacity 0.1s linear;
 }
 
 .title {
@@ -60,19 +60,19 @@ body::-webkit-scrollbar { display: none; }
   margin: 6px auto 0;
 }
 
-/* Conteneur 4 GUI */
+/* Conteneur des 4 GUI */
 #fourContainers {
   position: fixed;
+  top: calc(50% + 140px);
   left: 50%;
-  top: 55%; /* début sous le titre */
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   gap: 30px;
   text-align: center;
   opacity: 0;
-  transition: opacity 0.1s linear, transform 0.1s linear;
   z-index: 9;
+  transition: transform 0.1s linear, opacity 0.1s linear;
 }
 
 .smallGui {
@@ -106,22 +106,23 @@ body::-webkit-scrollbar { display: none; }
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-const fadeDistance = 250; // distance scroll pour fade
-const maxTitleMove = 150; // pixels que le titre peut monter
-const maxFourMove = 50;   // translation max des 4 GUI
+const fadeDistance = 300;   // distance de scroll pour la transition
+const titleMove = 120;      // pixels que le titre monte
+const guiMove = 40;         // pixels que les 4 GUI descendent
 
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
 
-  // === Titre ===
-  let titleProgress = Math.min(scrollY / fadeDistance, 1);
-  titleContainer.style.opacity = `${1 - titleProgress}`;
-  titleContainer.style.transform = `translate(-50%, calc(-50% - ${titleProgress * maxTitleMove}px))`;
+  // calcul de la progression de 0 à 1
+  let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
 
-  // === 4 GUI ===
-  let guiProgress = Math.min(scrollY / fadeDistance, 1);
-  fourContainers.style.opacity = `${guiProgress}`;
-  fourContainers.style.transform = `translateX(-50%) translateY(${guiProgress * maxFourMove}px)`;
+  // Titre : monte et disparaît
+  titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * titleMove}px))`;
+  titleContainer.style.opacity = `${1 - progress}`;
+
+  // 4 GUI : apparaissent progressivement juste après le titre
+  fourContainers.style.transform = `translateX(-50%) translateY(${progress * guiMove}px)`;
+  fourContainers.style.opacity = `${progress}`;
 });
 </script>
 </body>
