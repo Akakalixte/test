@@ -90,16 +90,22 @@ let mouseY = window.innerHeight / 2;
 let currentX = mouseX;
 let currentY = mouseY;
 
+// Suivi limité du mouvement
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 });
 
-// Animation fluide du suivi
 function animate() {
-  currentX += (mouseX - currentX) * 0.05;
-  currentY += (mouseY - currentY) * 0.05;
-  box.style.transform = `translate(${currentX - window.innerWidth/2}px, ${currentY - window.innerHeight/2}px)`;
+  // Interpolation fluide
+  currentX += (mouseX - currentX) * 0.03;
+  currentY += (mouseY - currentY) * 0.03;
+
+  // Déplacement restreint autour du centre
+  const offsetX = (currentX - window.innerWidth / 2) * 0.05;
+  const offsetY = (currentY - window.innerHeight / 2) * 0.05;
+
+  box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
   requestAnimationFrame(animate);
 }
 animate();
