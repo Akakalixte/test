@@ -50,8 +50,8 @@ html,body{
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  filter:contrast(1.05) saturate(1.05);
-  z-index:1; /* GIF en dessous des flashs */
+  filter:contrast(1.2) saturate(1.3);
+  z-index:1;
 }
 .overlay {
   position:absolute;
@@ -59,14 +59,30 @@ html,body{
   pointer-events:none;
   mix-blend-mode:normal;
   opacity:0;
-  z-index:2; /* au dessus du GIF */
+  z-index:2;
 }
-.redPulse {background:rgba(255,0,0,0.9);animation:rp 0.3s linear 1 forwards}
-.whitePulse {background:rgba(255,255,255,1);animation:wp 0.3s linear 1 forwards}
-.blackPulse {background:rgba(0,0,0,1);animation:bp 0.3s linear 1 forwards}
-@keyframes rp {0%{opacity:0}20%{opacity:1}60%{opacity:0.3}100%{opacity:0}}
-@keyframes wp {0%{opacity:0}30%{opacity:1}100%{opacity:0}}
-@keyframes bp {0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.redPulse {background:rgba(255,0,0,1);animation:rp 0.25s ease-in-out 1 forwards}
+.whitePulse {background:rgba(255,255,255,1);animation:wp 0.25s ease-in-out 1 forwards}
+.blackPulse {background:rgba(0,0,0,1);animation:bp 0.25s ease-in-out 1 forwards}
+
+@keyframes rp {
+  0%{opacity:0}
+  10%{opacity:1}
+  50%{opacity:0.9}
+  100%{opacity:0}
+}
+@keyframes wp {
+  0%{opacity:0}
+  20%{opacity:1}
+  60%{opacity:0.8}
+  100%{opacity:0}
+}
+@keyframes bp {
+  0%{opacity:0}
+  30%{opacity:1}
+  70%{opacity:0.9}
+  100%{opacity:0}
+}
 </style>
 </head>
 <body>
@@ -86,10 +102,7 @@ html,body{
 const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; 
 const audioUrl = "https://github.com/Akakalixte/sound-for-test/raw/refs/heads/main/Scary%20Scream%20Prank!%20%5BTubeRipper.com%5D.mp3";
 
-// séquence de flashs répétés
-const flashSequence = [
-  'white', 'red', 'black', 'white', 'red', 'black', 'white'
-];
+const flashSequence = ['white','red','black','white','red','black','white','red','black','white','red','black'];
 
 const promptArea = document.getElementById('promptArea');
 const scareWrap = document.getElementById('scareWrap');
@@ -99,15 +112,10 @@ const white = document.getElementById('white');
 const black = document.getElementById('black');
 
 promptArea.addEventListener('click', () => {
-  // plein écran
   if(document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen().catch(()=>{});
   }
-
-  // hide prompt
   promptArea.style.display = 'none';
-
-  // montrer jumpscare et lancer son en boucle instantanément
   scareImg.src = gifUrl;
   scareWrap.style.display = 'flex';
 
@@ -116,11 +124,13 @@ promptArea.addEventListener('click', () => {
   scareAudio.volume = 1.0;
   scareAudio.play().catch(()=>{});
 
-  // lancer les flashs répétés
+  // flashs puissants et rapides
   let t = 0;
-  for (let f of flashSequence) {
-    setTimeout(()=> triggerFlash(f), t);
-    t += 150;
+  for(let i = 0; i < 20; i++){ // 20 cycles de flashs
+    for(let f of flashSequence){
+      setTimeout(()=> triggerFlash(f), t);
+      t += 100; // très rapide
+    }
   }
 });
 
@@ -130,11 +140,10 @@ function triggerFlash(type){
   else if(type === 'white') el = white;
   else if(type === 'black') el = black;
   if(!el) return;
-
   el.style.display = 'block';
   el.classList.remove(type+'Pulse'); void el.offsetWidth;
   el.classList.add(type+'Pulse');
-  setTimeout(()=> el.style.display = 'none', 300);
+  setTimeout(()=> el.style.display = 'none', 250);
 }
 </script>
 </body>
