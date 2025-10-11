@@ -64,18 +64,18 @@ html,body{
 .whitePulse {background:rgba(255,255,255,1);animation:wp 0.4s linear 1 forwards}
 @keyframes rp {0%{opacity:0}20%{opacity:1}60%{opacity:0.3}100%{opacity:0}}
 @keyframes wp {0%{opacity:0}30%{opacity:1}100%{opacity:0}}
-.shake {animation:shakeA 0.5s ease-in-out 1}
+.shake {animation:shakeA 0.35s ease-in-out 1}
 @keyframes shakeA {
   0%{transform:translate(0,0)}
-  10%{transform:translate(-10px,-10px)}
-  20%{transform:translate(10px,10px)}
-  30%{transform:translate(-15px,10px)}
-  40%{transform:translate(15px,-10px)}
-  50%{transform:translate(-10px,5px)}
-  60%{transform:translate(10px,-5px)}
-  70%{transform:translate(-5px,10px)}
-  80%{transform:translate(5px,-10px)}
-  90%{transform:translate(-5px,5px)}
+  10%{transform:translate(-5px,-5px)}
+  20%{transform:translate(5px,5px)}
+  30%{transform:translate(-7px,7px)}
+  40%{transform:translate(7px,-5px)}
+  50%{transform:translate(-3px,3px)}
+  60%{transform:translate(3px,-3px)}
+  70%{transform:translate(-2px,2px)}
+  80%{transform:translate(2px,-2px)}
+  90%{transform:translate(-1px,1px)}
   100%{transform:translate(0,0)}
 }
 </style>
@@ -125,27 +125,33 @@ promptArea.addEventListener('click', async () => {
   setTimeout(()=>{
     scareImg.src = gifUrl;
     scareWrap.style.display = 'flex';
-    scareImg.classList.add('shake');
   }, 150);
 
   // flash initial intense
-  white.style.display = 'block';
-  white.classList.remove('whitePulse'); void white.offsetWidth;
-  white.classList.add('whitePulse');
-  red.style.display = 'block';
-  red.classList.remove('redPulse'); void red.offsetWidth;
-  red.classList.add('redPulse');
   setTimeout(()=>{
-    white.style.display = 'none';
-    red.style.display = 'none';
-  }, 500);
+    white.style.display = 'block';
+    white.classList.remove('whitePulse'); void white.offsetWidth;
+    white.classList.add('whitePulse');
+    red.style.display = 'block';
+    red.classList.remove('redPulse'); void red.offsetWidth;
+    red.classList.add('redPulse');
+    setTimeout(()=>{
+      white.style.display = 'none';
+      red.style.display = 'none';
+    }, 500);
+  }, 150);
 
-  // schedule pulses
+  // pulses réguliers
   let t = 150;
   for (let s of pulseSequence) {
     setTimeout(()=> triggerPulse(s.type), t);
     t += s.delay;
   }
+
+  // tremblement synchronisé avec moment du gif
+  setTimeout(()=>{
+    scareImg.classList.add('shake');
+  }, 800);
 
   // son synthétique optionnel
   setTimeout(async ()=>{
