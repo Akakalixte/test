@@ -1,116 +1,171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Akakalixte</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Deus — Animam — Tuam — Servet</title>
 <style>
-  body {
-    margin: 0;
-    background-color: black;
-    color: white;
-    font-family: 'Times New Roman', serif;
-    overflow: hidden;
-  }
+html,body {
+  height: 100%;
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: 'Times New Roman', serif;
+  overflow: hidden;
+  cursor: none;
+}
 
-  /* Cube central */
-  #cube {
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid white;
-    border-radius: 10px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: top 1s ease, left 1s ease;
-    animation: subtleMove 6s ease-in-out infinite;
-  }
+/* Conteneur du texte d'accueil */
+#floatingBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 25px 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+  text-align: center;
+  transition: transform 0.15s ease-out;
+  pointer-events: none;
+}
 
-  /* Léger mouvement du cube */
-  @keyframes subtleMove {
-    0%, 100% { transform: translate(-50%, -50%) translate(0px, 0px); }
-    25% { transform: translate(-50%, -50%) translate(10px, -5px); }
-    50% { transform: translate(-50%, -50%) translate(-8px, 8px); }
-    75% { transform: translate(-50%, -50%) translate(5px, -10px); }
-  }
+#floatingBox .main {
+  font-size: 26px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
 
-  /* Page noire */
-  #blackPage {
-    position: fixed;
-    inset: 0;
-    background-color: black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 1s ease;
-    pointer-events: none;
-  }
+#floatingBox .sub {
+  font-size: 14px;
+  color: #ccc;
+  font-style: italic;
+}
 
-  #blackPage.active {
-    opacity: 1;
-    pointer-events: all;
-  }
+#floatingBox .definition {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #999;
+  line-height: 1.5;
+  font-style: italic;
+  max-width: 500px;
+}
 
-  /* TITRES STYLISÉS */
-  h1 {
-    font-size: 4em;
-    letter-spacing: 4px;
-    text-shadow:
-      0 0 10px #ff0000,
-      0 0 20px #ff0000,
-      0 0 30px #ff5555;
-    animation: glowPulse 3s infinite ease-in-out;
-  }
+/* Écran noir après clic */
+#blackScreen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  h2 {
-    font-size: 1.5em;
-    color: #ddd;
-    letter-spacing: 2px;
-    text-shadow:
-      0 0 5px #ff4444,
-      0 0 10px #770000;
-    margin-top: -10px;
-    font-style: italic;
-  }
+/* Contenu du noir avec GUI stylisé */
+#blackContent {
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 2s ease forwards;
+  animation-delay: 0.8s;
+  background: rgba(20,20,20,0.6);
+  padding: 30px 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+}
 
-  @keyframes glowPulse {
-    0%, 100% {
-      text-shadow:
-        0 0 10px #ff0000,
-        0 0 20px #ff0000,
-        0 0 30px #ff5555;
-    }
-    50% {
-      text-shadow:
-        0 0 20px #ff5555,
-        0 0 40px #ff0000,
-        0 0 60px #aa0000;
-    }
-  }
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.title {
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow:
+    0 0 10px #fff,
+    0 0 20px #fff,
+    0 0 30px #fff;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  color: #ccc;
+  font-style: italic;
+  position: relative;
+}
+
+.subtitle::after {
+  content: "";
+  display: block;
+  width: 140px;
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+  margin: 6px auto 0;
+}
 </style>
 </head>
 <body>
 
-<div id="cube"></div>
+<div id="floatingBox">
+  <div class="main">Click here...</div>
+  <div class="sub">Deus — animam — tuam — servet</div>
+  <div class="definition">
+    A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
+    is an excessive fear of a specific object or situation that is based on feelings rather than rational causes.
+  </div>
+</div>
 
-<div id="blackPage">
-  <h1>Akakalixte</h1>
-  <h2>Phobia est Arma</h2>
+<div id="blackScreen">
+  <div id="blackContent">
+    <div class="title">Akakalixte</div>
+    <div class="subtitle">Phobia est Arma</div>
+  </div>
 </div>
 
 <script>
-  const cube = document.getElementById('cube');
-  const blackPage = document.getElementById('blackPage');
+const box = document.getElementById('floatingBox');
+const blackScreen = document.getElementById('blackScreen');
+const blackContent = document.getElementById('blackContent');
 
-  // Quand on clique sur le cube, la page noire apparaît
-  cube.addEventListener('click', () => {
-    blackPage.classList.add('active');
-  });
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let currentX = mouseX;
+let currentY = mouseY;
+
+// suivi de la souris limité
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+function animate() {
+  currentX += (mouseX - currentX) * 0.03;
+  currentY += (mouseY - currentY) * 0.03;
+
+  const offsetX = (currentX - window.innerWidth / 2) * 0.05;
+  const offsetY = (currentY - window.innerHeight / 2) * 0.05;
+
+  box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+  requestAnimationFrame(animate);
+}
+animate();
+
+// transition au clic
+document.addEventListener('click', () => {
+  blackScreen.style.pointerEvents = 'auto';
+  blackScreen.style.opacity = '1';
+});
 </script>
-
 </body>
 </html>
