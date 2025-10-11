@@ -50,38 +50,27 @@ html,body{
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  filter:contrast(1.2) saturate(1.3);
+  filter:contrast(1.3) saturate(1.4);
   z-index:1;
 }
 .overlay {
   position:absolute;
   inset:0;
   pointer-events:none;
-  mix-blend-mode:normal;
   opacity:0;
   z-index:2;
+  transition:opacity 0.1s ease;
 }
-.redPulse {background:rgba(255,0,0,1);animation:rp 0.25s ease-in-out 1 forwards}
-.whitePulse {background:rgba(255,255,255,1);animation:wp 0.25s ease-in-out 1 forwards}
-.blackPulse {background:rgba(0,0,0,1);animation:bp 0.25s ease-in-out 1 forwards}
-
-@keyframes rp {
-  0%{opacity:0}
-  10%{opacity:1}
-  50%{opacity:0.9}
-  100%{opacity:0}
-}
-@keyframes wp {
-  0%{opacity:0}
-  20%{opacity:1}
-  60%{opacity:0.8}
-  100%{opacity:0}
-}
-@keyframes bp {
-  0%{opacity:0}
-  30%{opacity:1}
-  70%{opacity:0.9}
-  100%{opacity:0}
+.word {
+  position: absolute;
+  color: rgba(255,255,255,0.9);
+  font-weight: 900;
+  font-family: "Impact", sans-serif;
+  z-index: 3;
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 0 0 10px red, 0 0 25px black;
+  transform-origin: center;
 }
 </style>
 </head>
@@ -93,23 +82,27 @@ html,body{
 
 <div id="scareWrap" role="dialog" aria-hidden="true">
   <img id="scareImg" alt="scare" src="" />
-  <div id="red" class="overlay"></div>
-  <div id="white" class="overlay"></div>
-  <div id="black" class="overlay"></div>
+  <div id="flash" class="overlay"></div>
 </div>
 
 <script>
 const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; 
 const audioUrl = "https://github.com/Akakalixte/sound-for-test/raw/refs/heads/main/Scary%20Scream%20Prank!%20%5BTubeRipper.com%5D.mp3";
 
-const flashSequence = ['white','red','black','white','red','black','white','red','black','white','red','black'];
+const colors = [
+  'rgba(255,255,255,0.6)',
+  'rgba(255,0,0,0.5)',
+  'rgba(0,0,0,0.5)',
+  'rgba(255,0,0,0.6)',
+  'rgba(255,255,255,0.4)'
+];
+
+const words = ["HELP", "RUN", "STOP", "DIE", "NO ESCAPE", "WHY", "PLEASE", "LOOK"];
 
 const promptArea = document.getElementById('promptArea');
 const scareWrap = document.getElementById('scareWrap');
 const scareImg = document.getElementById('scareImg');
-const red = document.getElementById('red');
-const white = document.getElementById('white');
-const black = document.getElementById('black');
+const flash = document.getElementById('flash');
 
 promptArea.addEventListener('click', () => {
   if(document.documentElement.requestFullscreen){
@@ -124,26 +117,43 @@ promptArea.addEventListener('click', () => {
   scareAudio.volume = 1.0;
   scareAudio.play().catch(()=>{});
 
-  // flashs puissants et rapides
-  let t = 0;
-  for(let i = 0; i < 20; i++){ // 20 cycles de flashs
-    for(let f of flashSequence){
-      setTimeout(()=> triggerFlash(f), t);
-      t += 100; // très rapide
-    }
-  }
+  flashLoop();
 });
 
-function triggerFlash(type){
-  let el;
-  if(type === 'red') el = red;
-  else if(type === 'white') el = white;
-  else if(type === 'black') el = black;
-  if(!el) return;
-  el.style.display = 'block';
-  el.classList.remove(type+'Pulse'); void el.offsetWidth;
-  el.classList.add(type+'Pulse');
-  setTimeout(()=> el.style.display = 'none', 250);
+function flashLoop(){
+  const c = colors[Math.floor(Math.random() * colors.length)];
+  flash.style.background = c;
+  flash.style.opacity = 1;
+
+  showRandomWord();
+
+  setTimeout(() => {
+    flash.style.opacity = 0;
+  }, 100);
+
+  setTimeout(flashLoop, 150 + Math.random()*200);
+}
+
+function showRandomWord(){
+  const word = document.createElement('div');
+  word.className = 'word';
+  word.innerText = words[Math.floor(Math.random() * words.length)];
+
+  const size = Math.random() * 80 + 40;
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * window.innerHeight;
+  const rot = Math.random() * 60 - 30;
+
+  word.style.left = `${x}px`;
+  word.style.top = `${y}px`;
+  word.style.fontSize = `${size}px`;
+  word.style.transform = `rotate(${rot}deg)`;
+
+  document.body.appendChild(word);
+
+  setTimeout(() => {
+    word.remove();
+  }, 120 + Math.random()*80);
 }
 </script>
 </body>
