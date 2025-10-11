@@ -15,7 +15,7 @@
   /* controlled 'flash' overlays (not strobe) */
   .overlay {position:absolute;inset:0;pointer-events:none;mix-blend-mode:normal;opacity:0}
   .redPulse {background:rgba(170,0,0,0.75);animation:rp 0.42s linear 1 forwards}
-  .whitePulse {background:rgba(255,255,255,0.75);animation:wp 0.22s linear 1 forwards}
+  .whitePulse {background:rgba(255,255,255,0.85);animation:wp 0.35s linear 1 forwards} /* plus intense initial */
   @keyframes rp {0%{opacity:0}20%{opacity:0.9}60%{opacity:0.25}100%{opacity:0}}
   @keyframes wp {0%{opacity:0}30%{opacity:0.95}100%{opacity:0}}
   /* subtle shake */
@@ -37,13 +37,13 @@
 
 <script>
 /* Config */
-const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; // fourni par toi
+const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; 
 const pulseSequence = [
   {type:'white', delay: 220},
   {type:'red', delay: 140},
   {type:'white', delay: 180}
 ];
-const totalShowMs = 1600; // durée totale des flashs
+const totalShowMs = 1600; 
 
 /* Elements */
 const prompt = document.getElementById('prompt');
@@ -55,40 +55,50 @@ const white = document.getElementById('white');
 
 /* Jump-scare au clic */
 prompt.addEventListener('click', async () => {
+  // demander le plein écran
+  if(document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }
+
   // hide prompt
   promptArea.style.display = 'none';
-  // set image
-  scareImg.src = gifUrl;
-  // show wrapper
-  scareWrap.style.display = 'flex';
-  // small shake for emphasis
-  scareImg.classList.add('shake');
+
+  // flash initial intense
+  white.style.display = 'block';
+  white.classList.remove('whitePulse'); void white.offsetWidth;
+  white.classList.add('whitePulse');
+  setTimeout(()=> white.style.display = 'none', 400);
+
+  // show image après court délai pour que flash soit visible
+  setTimeout(()=>{
+    scareImg.src = gifUrl;
+    scareWrap.style.display = 'flex';
+    scareImg.classList.add('shake');
+  }, 150); // petit délai 150ms
 
   // start audio (synthesized)
-  try { await playDistortedBurst(); } catch(e){ console.warn("audio error", e); }
+  setTimeout(async ()=>{
+    try { await playDistortedBurst(); } catch(e){ console.warn("audio error", e); }
+  }, 150);
 
   // schedule pulses (controlled)
-  let t = 0;
+  let t = 150;
   for (let s of pulseSequence) {
     setTimeout(()=> triggerPulse(s.type), t);
     t += s.delay;
   }
-
-  // L'image reste visible, on ne fait plus disparaître le scareWrap
 });
 
 /* Pulse function */
 function triggerPulse(type){
   if (type === 'red') {
     red.style.display = 'block';
-    red.classList.remove('redPulse'); // restart animation
-    void red.offsetWidth;
+    red.classList.remove('redPulse'); void red.offsetWidth;
     red.classList.add('redPulse');
     setTimeout(()=> red.style.display = 'none', 520);
   } else if (type === 'white') {
     white.style.display = 'block';
-    white.classList.remove('whitePulse');
-    void white.offsetWidth;
+    white.classList.remove('whitePulse'); void white.offsetWidth;
     white.classList.add('whitePulse');
     setTimeout(()=> white.style.display = 'none', 300);
   }
@@ -99,8 +109,7 @@ async function playDistortedBurst(){
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const now = ctx.currentTime;
 
-  // noise burst
-  const bufferSize = ctx.sampleRate * 0.25; // 0.25s
+  const bufferSize = ctx.sampleRate * 0.25; 
   const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = noiseBuffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
@@ -113,7 +122,6 @@ async function playDistortedBurst(){
   noiseGain.gain.linearRampToValueAtTime(0.7, now + 0.02);
   noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
 
-  // tonal sweep
   const osc = ctx.createOscillator();
   osc.type = "sawtooth";
   osc.frequency.setValueAtTime(220, now);
@@ -123,16 +131,13 @@ async function playDistortedBurst(){
   oscGain.gain.linearRampToValueAtTime(0.45, now + 0.02);
   oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
 
-  // distortion
   const dist = ctx.createWaveShaper();
   dist.curve = makeDistortionCurve(300);
   dist.oversample = '4x';
 
-  // master gain
   const master = ctx.createGain();
   master.gain.value = 0.9;
 
-  // connect nodes
   noise.connect(noiseGain).connect(dist).connect(master).connect(ctx.destination);
   osc.connect(oscGain).connect(dist).connect(master).connect(ctx.destination);
 
@@ -156,4 +161,3 @@ async function playDistortedBurst(){
 </script>
 </body>
 </html>
-
