@@ -116,12 +116,10 @@ promptArea.addEventListener('click', async () => {
   // hide prompt
   promptArea.style.display = 'none';
 
-  // play GitHub audio fort sans pop de clic
+  // jouer uniquement le son GitHub
   const scareAudio = new Audio(audioUrl);
-  scareAudio.volume = 0.0; // commence silencieux
-  scareAudio.play().then(() => {
-    scareAudio.volume = 1.0; // volume max dès que la lecture démarre
-  }).catch(()=>{});
+  scareAudio.volume = 1.0;
+  scareAudio.play().catch(()=>{});
 
   // show jumpscare image
   setTimeout(()=>{
@@ -154,11 +152,6 @@ promptArea.addEventListener('click', async () => {
   setTimeout(()=>{
     scareImg.classList.add('shake');
   }, 800);
-
-  // son synthétique optionnel
-  setTimeout(async ()=>{
-    try { await playDistortedBurst(); } catch(e){ console.warn("audio error", e); }
-  }, 150);
 });
 
 function triggerPulse(type){
@@ -174,61 +167,7 @@ function triggerPulse(type){
     setTimeout(()=> white.style.display = 'none', 400);
   }
 }
-
-// son distordu synthétique
-async function playDistortedBurst(){
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const now = ctx.currentTime;
-
-  const bufferSize = ctx.sampleRate * 0.25; 
-  const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = noiseBuffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random()*2 -1) * (1 - i / bufferSize) * 0.6;
-  }
-  const noise = ctx.createBufferSource();
-  noise.buffer = noiseBuffer;
-  const noiseGain = ctx.createGain();
-  noiseGain.gain.setValueAtTime(0.0, now);
-  noiseGain.gain.linearRampToValueAtTime(0.7, now + 0.02);
-  noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
-
-  const osc = ctx.createOscillator();
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(220, now);
-  osc.frequency.exponentialRampToValueAtTime(1800, now + 0.18);
-  const oscGain = ctx.createGain();
-  oscGain.gain.setValueAtTime(0.0001, now);
-  oscGain.gain.linearRampToValueAtTime(0.45, now + 0.02);
-  oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
-
-  const dist = ctx.createWaveShaper();
-  dist.curve = makeDistortionCurve(300);
-  dist.oversample = '4x';
-
-  const master = ctx.createGain();
-  master.gain.value = 0.9;
-
-  noise.connect(noiseGain).connect(dist).connect(master).connect(ctx.destination);
-  osc.connect(oscGain).connect(dist).connect(master).connect(ctx.destination);
-
-  noise.start(now);
-  osc.start(now);
-  noise.stop(now + 0.25);
-  osc.stop(now + 0.25);
-
-  function makeDistortionCurve(amount) {
-    const k = typeof amount === 'number' ? amount : 50;
-    const n_samples = 44100;
-    const curve = new Float32Array(n_samples);
-    const deg = Math.PI / 180;
-    for (let i = 0; i < n_samples; ++i ) {
-      const x = i * 2 / n_samples - 1;
-      curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
-    }
-    return curve;
-  }
-}
 </script>
 </body>
 </html>
+
