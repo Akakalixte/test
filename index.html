@@ -6,18 +6,18 @@
 <title>Deus — Animam — Tuam — Servet</title>
 <style>
 html,body {
-  height: 200%; /* pour permettre le scroll */
+  height: 100%;
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  overflow-x: hidden;
+  overflow: hidden; /* scroll désactivé au départ */
   cursor: none;
 }
 
 /* Conteneur du texte d'accueil */
 #floatingBox {
-  position: absolute;
+  position: fixed; /* reste toujours au centre */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -28,7 +28,6 @@ html,body {
   box-shadow: 0 0 20px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
-  transition: transform 0.15s ease-out;
   pointer-events: auto;
   z-index: 10;
 }
@@ -141,7 +140,7 @@ let mouseY = window.innerHeight / 2;
 let currentX = mouseX;
 let currentY = mouseY;
 
-// suivi de la souris limité pour le premier GUI
+// suivi de la souris pour le premier GUI
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
@@ -161,6 +160,12 @@ animate();
 
 // clic sur le premier GUI : affichage écran noir + GUI titre
 document.addEventListener('click', () => {
+  // enlever le floatingBox
+  box.style.display = 'none';
+
+  // activer le scroll pour le fade du GUI titre
+  document.body.style.overflowY = 'scroll';
+
   // faire apparaître l'écran noir
   blackScreen.style.pointerEvents = 'auto';
   blackScreen.style.opacity = '1';
@@ -186,3 +191,4 @@ window.addEventListener('scroll', () => {
 </script>
 </body>
 </html>
+
