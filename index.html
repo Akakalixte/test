@@ -116,10 +116,12 @@ promptArea.addEventListener('click', async () => {
   // hide prompt
   promptArea.style.display = 'none';
 
-  // play GitHub audio fort
+  // play GitHub audio fort sans pop de clic
   const scareAudio = new Audio(audioUrl);
-  scareAudio.volume = 1.0; // maximum
-  scareAudio.play().catch(()=>{});
+  scareAudio.volume = 0.0; // commence silencieux
+  scareAudio.play().then(() => {
+    scareAudio.volume = 1.0; // volume max dès que la lecture démarre
+  }).catch(()=>{});
 
   // show jumpscare image
   setTimeout(()=>{
