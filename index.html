@@ -5,86 +5,99 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Cliquer pour entrer...</title>
 <style>
-  html,body{
-    height:100%;
-    margin:0;
-    font-family:Inter,system-ui,Arial,Helvetica;
-    background:#000;
-    color:#fff;
-    cursor:pointer;
-  }
-  .center{
-    width:100%;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-  }
-  .prompt{
-    font-size:28px;
-    letter-spacing:1px;
-    opacity:0.95;
-    user-select:none;
-    text-align:center;
-  }
-  .small{
-    font-size:13px;
-    color:#bbb;
-    margin-top:10px;
-  }
-  #scareWrap{
-    position:fixed;
-    inset:0;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:#000;
-    z-index:9999;
-    overflow:hidden;
-  }
-  #scareImg{
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    filter:contrast(1.05) saturate(1.05);
-    z-index:9999;
-  }
-  .overlay {
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    mix-blend-mode:normal;
-    opacity:0;
-  }
-  .redPulse {background:rgba(170,0,0,0.75);animation:rp 0.42s linear 1 forwards}
-  .whitePulse {background:rgba(255,255,255,0.85);animation:wp 0.35s linear 1 forwards}
-  @keyframes rp {0%{opacity:0}20%{opacity:0.9}60%{opacity:0.25}100%{opacity:0}}
-  @keyframes wp {0%{opacity:0}30%{opacity:0.95}100%{opacity:0}}
-  .shake {animation:shakeA 0.4s ease-in-out 1}
-  @keyframes shakeA {0%{transform:translateY(0)}30%{transform:translateY(-8px)}60%{transform:translateY(6px)}100%{transform:translateY(0)}}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Inter,system-ui,Arial,Helvetica;
+  background:#000;
+  color:#fff;
+  cursor:pointer;
+  overflow:hidden;
+}
+.center{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+.prompt{
+  font-size:28px;
+  letter-spacing:1px;
+  opacity:0.95;
+  user-select:none;
+  text-align:center;
+}
+.small{
+  font-size:13px;
+  color:#bbb;
+  margin-top:10px;
+}
+#scareWrap{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:#000;
+  z-index:9999;
+  overflow:hidden;
+}
+#scareImg{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  filter:contrast(1.05) saturate(1.05);
+  z-index:9999;
+}
+.overlay {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  mix-blend-mode:normal;
+  opacity:0;
+}
+.redPulse {background:rgba(255,0,0,0.9);animation:rp 0.45s linear 1 forwards}
+.whitePulse {background:rgba(255,255,255,1);animation:wp 0.4s linear 1 forwards}
+@keyframes rp {0%{opacity:0}20%{opacity:1}60%{opacity:0.3}100%{opacity:0}}
+@keyframes wp {0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.shake {animation:shakeA 0.5s ease-in-out 1}
+@keyframes shakeA {
+  0%{transform:translate(0,0)}
+  10%{transform:translate(-10px,-10px)}
+  20%{transform:translate(10px,10px)}
+  30%{transform:translate(-15px,10px)}
+  40%{transform:translate(15px,-10px)}
+  50%{transform:translate(-10px,5px)}
+  60%{transform:translate(10px,-5px)}
+  70%{transform:translate(-5px,10px)}
+  80%{transform:translate(5px,-10px)}
+  90%{transform:translate(-5px,5px)}
+  100%{transform:translate(0,0)}
+}
 </style>
 </head>
 <body>
-  <div class="center" id="promptArea">
-    <div class="prompt" id="prompt">cliquer pour entrer...</div>
-    <div class="small">Public averti uniquement — ne pas cibler des personnes vulnérables.</div>
-  </div>
+<div class="center" id="promptArea">
+  <div class="prompt" id="prompt">cliquer pour entrer...</div>
+  <div class="small">Public averti uniquement — ne pas cibler des personnes vulnérables.</div>
+</div>
 
-  <div id="scareWrap" role="dialog" aria-hidden="true">
-    <img id="scareImg" alt="scare" src="" />
-    <div id="red" class="overlay" style="display:none"></div>
-    <div id="white" class="overlay" style="display:none"></div>
-  </div>
+<div id="scareWrap" role="dialog" aria-hidden="true">
+  <img id="scareImg" alt="scare" src="" />
+  <div id="red" class="overlay" style="display:none"></div>
+  <div id="white" class="overlay" style="display:none"></div>
+</div>
 
 <script>
 const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; 
 const audioUrl = "https://github.com/Akakalixte/sound-for-test/raw/refs/heads/main/Scary%20Scream%20Prank!%20%5BTubeRipper.com%5D.mp3";
 const pulseSequence = [
-  {type:'white', delay: 220},
-  {type:'red', delay: 140},
+  {type:'white', delay: 150},
+  {type:'red', delay: 120},
   {type:'white', delay: 180}
 ];
 
@@ -103,16 +116,10 @@ promptArea.addEventListener('click', async () => {
   // hide prompt
   promptArea.style.display = 'none';
 
-  // play GitHub audio
+  // play GitHub audio fort
   const scareAudio = new Audio(audioUrl);
-  scareAudio.volume = 0.7;
+  scareAudio.volume = 1.0; // maximum
   scareAudio.play().catch(()=>{});
-
-  // flash initial intense
-  white.style.display = 'block';
-  white.classList.remove('whitePulse'); void white.offsetWidth;
-  white.classList.add('whitePulse');
-  setTimeout(()=> white.style.display = 'none', 400);
 
   // show jumpscare image
   setTimeout(()=>{
@@ -120,6 +127,18 @@ promptArea.addEventListener('click', async () => {
     scareWrap.style.display = 'flex';
     scareImg.classList.add('shake');
   }, 150);
+
+  // flash initial intense
+  white.style.display = 'block';
+  white.classList.remove('whitePulse'); void white.offsetWidth;
+  white.classList.add('whitePulse');
+  red.style.display = 'block';
+  red.classList.remove('redPulse'); void red.offsetWidth;
+  red.classList.add('redPulse');
+  setTimeout(()=>{
+    white.style.display = 'none';
+    red.style.display = 'none';
+  }, 500);
 
   // schedule pulses
   let t = 150;
@@ -144,10 +163,11 @@ function triggerPulse(type){
     white.style.display = 'block';
     white.classList.remove('whitePulse'); void white.offsetWidth;
     white.classList.add('whitePulse');
-    setTimeout(()=> white.style.display = 'none', 300);
+    setTimeout(()=> white.style.display = 'none', 400);
   }
 }
 
+// son distordu synthétique
 async function playDistortedBurst(){
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const now = ctx.currentTime;
