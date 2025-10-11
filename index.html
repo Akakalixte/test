@@ -11,13 +11,13 @@ html,body {
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  overflow: hidden; /* scroll désactivé au départ */
+  overflow: hidden;
   cursor: none;
 }
 
-/* Conteneur du texte d'accueil */
+/* Premier GUI */
 #floatingBox {
-  position: fixed; /* reste toujours au centre */
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -53,7 +53,7 @@ html,body {
   max-width: 500px;
 }
 
-/* Écran noir après clic */
+/* Écran noir */
 #blackScreen {
   position: relative;
   width: 100%;
@@ -67,7 +67,7 @@ html,body {
 
 /* GUI titre */
 #blackContent {
-  position: fixed; /* centré initialement */
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -86,10 +86,7 @@ html,body {
   font-size: 48px;
   letter-spacing: 4px;
   color: #fff;
-  text-shadow:
-    0 0 10px #fff,
-    0 0 20px #fff,
-    0 0 30px #fff;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
   font-weight: 700;
   margin-bottom: 12px;
 }
@@ -110,6 +107,34 @@ html,body {
   background: rgba(255,255,255,0.3);
   margin: 6px auto 0;
 }
+
+/* Petits GUI après scroll */
+.smallGUIs {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 50;
+}
+
+.smallGUIs .gui {
+  background: rgba(30,30,30,0.6);
+  padding: 15px 25px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 0 10px rgba(255,255,255,0.05);
+  color: #eee;
+  font-size: 16px;
+  letter-spacing: 1px;
+  font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -128,12 +153,19 @@ html,body {
     <div class="title">Akakalixte</div>
     <div class="subtitle">Phobia est Arma</div>
   </div>
+  <div class="smallGUIs" id="smallGUIs">
+    <div class="gui">GUI 1</div>
+    <div class="gui">GUI 2</div>
+    <div class="gui">GUI 3</div>
+    <div class="gui">GUI 4</div>
+  </div>
 </div>
 
 <script>
 const box = document.getElementById('floatingBox');
 const blackScreen = document.getElementById('blackScreen');
 const blackContent = document.getElementById('blackContent');
+const smallGUIs = document.getElementById('smallGUIs');
 
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
@@ -158,19 +190,13 @@ function animate() {
 }
 animate();
 
-// clic sur le premier GUI : affichage écran noir + GUI titre
+// clic sur le premier GUI
 document.addEventListener('click', () => {
-  // cacher le premier GUI
   box.style.display = 'none';
-
-  // activer le scroll pour permettre fade + translation du second GUI
   document.body.style.overflowY = 'scroll';
-
-  // faire apparaître l'écran noir
   blackScreen.style.pointerEvents = 'auto';
   blackScreen.style.opacity = '1';
 
-  // faire apparaître le GUI titre progressivement
   setTimeout(() => {
     blackContent.style.opacity = '1';
   }, 300);
@@ -187,6 +213,13 @@ window.addEventListener('scroll', () => {
 
   blackContent.style.opacity = 1 - progress;
   blackContent.style.transform = `translate(-50%, calc(-50% - ${progress * 100}px))`;
+
+  // quand le titre disparaît, afficher les petits GUI
+  if(progress >= 1) {
+    smallGUIs.style.opacity = '1';
+  } else {
+    smallGUIs.style.opacity = '0';
+  }
 });
 </script>
 </body>
