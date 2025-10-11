@@ -11,7 +11,7 @@ html,body {
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  overflow: hidden;
+  overflow-x: hidden;
   cursor: none;
 }
 
@@ -32,36 +32,17 @@ html,body {
   z-index: 10;
 }
 
-#floatingBox .main {
-  font-size: 26px;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
+#floatingBox .main { font-size: 26px; letter-spacing: 2px; margin-bottom: 8px; }
+#floatingBox .sub { font-size: 14px; color: #ccc; font-style: italic; }
+#floatingBox .definition { margin-top: 8px; font-size: 13px; color: #999; line-height: 1.5; font-style: italic; max-width: 500px; }
 
-#floatingBox .sub {
-  font-size: 14px;
-  color: #ccc;
-  font-style: italic;
-}
-
-#floatingBox .definition {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #999;
-  line-height: 1.5;
-  font-style: italic;
-  max-width: 500px;
-}
-
-/* Écran noir */
+/* Écran noir et scrollable */
 #blackScreen {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 200vh; /* hauteur doublée pour permettre le scroll */
   background: #000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1s ease;
+  pointer-events: auto;
   z-index: 100;
 }
 
@@ -98,7 +79,6 @@ html,body {
   font-style: italic;
   position: relative;
 }
-
 .subtitle::after {
   content: "";
   display: block;
@@ -111,7 +91,7 @@ html,body {
 /* Petits GUI après scroll */
 .smallGUIs {
   position: fixed;
-  top: 40%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
@@ -123,7 +103,6 @@ html,body {
   gap: 20px;
   z-index: 50;
 }
-
 .smallGUIs .gui {
   background: rgba(30,30,30,0.6);
   padding: 15px 25px;
@@ -214,7 +193,7 @@ window.addEventListener('scroll', () => {
   blackContent.style.opacity = 1 - progress;
   blackContent.style.transform = `translate(-50%, calc(-50% - ${progress * 100}px))`;
 
-  // quand le titre disparaît, afficher les petits GUI
+  // petits GUI apparaissent après disparition du titre
   if(progress >= 1) {
     smallGUIs.style.opacity = '1';
   } else {
