@@ -6,34 +6,34 @@
 <title>Akakalixte — Phobia est Arma</title>
 <style>
 html, body {
+  height: 200%; /* pour permettre le scroll */
   margin: 0;
-  padding: 0;
-  height: 200%; /* permet le scroll */
   background: #000;
-  font-family: 'Times New Roman', serif;
   color: #fff;
+  font-family: 'Times New Roman', serif;
   overflow-x: hidden;
-  cursor: none;
+  cursor: default;
 }
 
-/* GUI titre */
+/* Conteneur du titre principal */
 #titleContainer {
-  position: fixed; /* reste centré */
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(20,20,20,0.6);
-  padding: 30px 50px;
-  border-radius: 14px;
+  background: rgba(20, 20, 20, 0.6);
+  padding: 40px 60px;
+  border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
   opacity: 0;
-  transition: opacity 1.5s ease, transform 0.5s ease;
+  transition: opacity 1.5s ease, transform 0.1s linear;
   z-index: 10;
 }
 
+/* Styles titres */
 .title {
   font-size: 48px;
   letter-spacing: 4px;
@@ -80,17 +80,16 @@ window.addEventListener('load', () => {
 });
 
 // Scroll effect : disparaît complètement vers le haut
-const fadeDistance = window.innerHeight; // titre sort entièrement de l'écran
+const fadeDistance = window.innerHeight * 0.9; // distance pour disparition
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   let progress = scrollY / fadeDistance;
   progress = Math.min(Math.max(progress, 0), 1);
 
-  // Opacité et translation complètes
+  // Opacité et translation proportionnelles au scroll
   titleContainer.style.opacity = 1 - progress;
   titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * window.innerHeight}px))`;
 });
 </script>
 </body>
 </html>
-
