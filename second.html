@@ -64,7 +64,7 @@ body::-webkit-scrollbar { display: none; }
 /* Conteneur des 4 GUI */
 #fourContainers {
   position: fixed;
-  top: calc(50% + 140px); /* commence juste sous le titre */
+  top: 55%; /* juste sous le titre, reste dans le viewport */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -107,25 +107,32 @@ body::-webkit-scrollbar { display: none; }
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-// paramètres scroll
 const fadeDistance = 300; // distance de scroll pour la transition complète
-const containerOffset = 140; // offset entre titre et premiers GUI
+const guiGap = 30; // écart vertical entre chaque GUI
+const guiHeight = 80; // hauteur approximative d'une GUI pour calcul
 
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
 
-  // calcul de la progression (0 = haut, 1 = fin fade)
+  // progression pour fade
   let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
 
   // titre : monte et disparait
   titleContainer.style.transform = `translate(-50%, ${-50 - progress*100}%)`;
   titleContainer.style.opacity = `${1 - progress}`;
 
-  // 4 GUI : apparaissent progressivement juste après le titre
-  fourContainers.style.transform = `translateX(-50%) translateY(${progress*50}px)`; 
+  // 4 GUI : apparaissent progressivement sous le titre
+  const totalGUIHeight = 4*guiHeight + 3*guiGap;
+  const startTop = 55; // % de l'écran pour début GUI
   fourContainers.style.opacity = `${progress}`;
+  fourContainers.style.transform = `translateX(-50%) translateY(${progress * 50}px)`; 
+
+  // s'assurer que tout reste dans l'écran
+  const maxOffset = window.innerHeight*0.45 - totalGUIHeight;
+  fourContainers.style.top = `${Math.min(startTop + progress*50, maxOffset)}%`;
 });
 </script>
 </body>
 </html>
+
 
