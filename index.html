@@ -60,24 +60,12 @@ html,body{
   mix-blend-mode:normal;
   opacity:0;
 }
-.redPulse {background:rgba(255,0,0,0.9);animation:rp 0.45s linear 1 forwards}
-.whitePulse {background:rgba(255,255,255,1);animation:wp 0.4s linear 1 forwards}
+.redPulse {background:rgba(255,0,0,0.9);animation:rp 0.3s linear 1 forwards}
+.whitePulse {background:rgba(255,255,255,1);animation:wp 0.3s linear 1 forwards}
+.blackPulse {background:rgba(0,0,0,1);animation:bp 0.3s linear 1 forwards}
 @keyframes rp {0%{opacity:0}20%{opacity:1}60%{opacity:0.3}100%{opacity:0}}
 @keyframes wp {0%{opacity:0}30%{opacity:1}100%{opacity:0}}
-.shake {animation:shakeA 0.35s ease-in-out 1}
-@keyframes shakeA {
-  0%{transform:translate(0,0)}
-  10%{transform:translate(-5px,-5px)}
-  20%{transform:translate(5px,5px)}
-  30%{transform:translate(-7px,7px)}
-  40%{transform:translate(7px,-5px)}
-  50%{transform:translate(-3px,3px)}
-  60%{transform:translate(3px,-3px)}
-  70%{transform:translate(-2px,2px)}
-  80%{transform:translate(2px,-2px)}
-  90%{transform:translate(-1px,1px)}
-  100%{transform:translate(0,0)}
-}
+@keyframes bp {0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 </style>
 </head>
 <body>
@@ -90,15 +78,16 @@ html,body{
   <img id="scareImg" alt="scare" src="" />
   <div id="red" class="overlay"></div>
   <div id="white" class="overlay"></div>
+  <div id="black" class="overlay"></div>
 </div>
 
 <script>
 const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; 
 const audioUrl = "https://github.com/Akakalixte/sound-for-test/raw/refs/heads/main/Scary%20Scream%20Prank!%20%5BTubeRipper.com%5D.mp3";
-const pulseSequence = [
-  {type:'white', delay: 150},
-  {type:'red', delay: 120},
-  {type:'white', delay: 180}
+
+// séquence de flashs répétés
+const flashSequence = [
+  'white', 'red', 'black', 'white', 'red', 'black', 'white'
 ];
 
 const promptArea = document.getElementById('promptArea');
@@ -106,6 +95,7 @@ const scareWrap = document.getElementById('scareWrap');
 const scareImg = document.getElementById('scareImg');
 const red = document.getElementById('red');
 const white = document.getElementById('white');
+const black = document.getElementById('black');
 
 promptArea.addEventListener('click', () => {
   // plein écran
@@ -125,37 +115,25 @@ promptArea.addEventListener('click', () => {
   scareAudio.volume = 1.0;
   scareAudio.play().catch(()=>{});
 
-  // flashs instantanés
-  red.style.display = 'block';
-  red.classList.remove('redPulse'); void red.offsetWidth;
-  red.classList.add('redPulse');
-  white.style.display = 'block';
-  white.classList.remove('whitePulse'); void white.offsetWidth;
-  white.classList.add('whitePulse');
-
-  // pulses réguliers
+  // lancer les flashs répétés
   let t = 0;
-  for (let s of pulseSequence) {
-    setTimeout(()=> triggerPulse(s.type), t);
-    t += s.delay;
+  for (let f of flashSequence) {
+    setTimeout(()=> triggerFlash(f), t);
+    t += 150;
   }
-
-  // tremblement synchronisé
-  scareImg.classList.add('shake');
 });
 
-function triggerPulse(type){
-  if (type === 'red') {
-    red.style.display = 'block';
-    red.classList.remove('redPulse'); void red.offsetWidth;
-    red.classList.add('redPulse');
-    setTimeout(()=> red.style.display = 'none', 520);
-  } else if (type === 'white') {
-    white.style.display = 'block';
-    white.classList.remove('whitePulse'); void white.offsetWidth;
-    white.classList.add('whitePulse');
-    setTimeout(()=> white.style.display = 'none', 400);
-  }
+function triggerFlash(type){
+  let el;
+  if(type === 'red') el = red;
+  else if(type === 'white') el = white;
+  else if(type === 'black') el = black;
+  if(!el) return;
+
+  el.style.display = 'block';
+  el.classList.remove(type+'Pulse'); void el.offsetWidth;
+  el.classList.add(type+'Pulse');
+  setTimeout(()=> el.style.display = 'none', 300);
 }
 </script>
 </body>
