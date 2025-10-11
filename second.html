@@ -6,7 +6,7 @@
 <title>Akakalixte — Phobia est Arma</title>
 <style>
 html, body {
-  height: 10000px; /* scroll infini simulé */
+  height: 3000px; /* grande hauteur pour scroll infini */
   margin: 0;
   background: #000;
   color: #fff;
@@ -106,35 +106,36 @@ body::-webkit-scrollbar { display: none; }
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-const fadeDistance = 300;   // distance de scroll pour la transition
+const fadeDistance = 300;   // distance sur laquelle le titre disparaît
 const titleMove = 120;      // pixels que le titre monte
 const guiMove = 40;         // pixels que les 4 GUI descendent
 
-window.addEventListener('scroll', () => {
-  let scrollY = window.scrollY;
+function updateAnimation() {
+  const scrollY = window.scrollY;
 
-  // Progression de 0 à 1 pour chaque cycle
-  let progress = (scrollY % fadeDistance) / fadeDistance;
+  // progression normalisée pour le fade
+  let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
 
-  // Synchronisation : titre visible si progress < 0.5, GUI si progress >= 0.5
+  // synchronisation parfaite
   if (progress < 0.5) {
-    // fade titre
-    let titleProgress = progress * 2; // remap 0-0.5 => 0-1
+    let titleProgress = progress * 2; // 0-0.5 => 0-1
     titleContainer.style.transform = `translate(-50%, calc(-50% - ${titleProgress * titleMove}px))`;
     titleContainer.style.opacity = `${1 - titleProgress}`;
 
-    // cacher les 4 GUI
     fourContainers.style.opacity = 0;
   } else {
-    // fade GUI
-    let guiProgress = (progress - 0.5) * 2; // remap 0.5-1 => 0-1
+    let guiProgress = (progress - 0.5) * 2; // 0.5-1 => 0-1
     fourContainers.style.transform = `translateX(-50%) translateY(${guiProgress * guiMove}px)`;
     fourContainers.style.opacity = `${guiProgress}`;
 
-    // cacher le titre
     titleContainer.style.opacity = 0;
   }
-});
+
+  requestAnimationFrame(updateAnimation);
+}
+
+// démarrage de l'animation
+requestAnimationFrame(updateAnimation);
 </script>
 </body>
 </html>
