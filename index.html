@@ -55,23 +55,24 @@ html,body {
 
 /* Écran noir après clic */
 #blackScreen {
-  position: fixed;
-  inset: 0;
+  position: relative; /* pour que le titre soit scrollable */
+  width: 100%;
+  min-height: 100vh;
   background: #000;
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease;
   z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* GUI titre avec glow */
+/* GUI titre */
 #blackContent {
+  position: absolute; /* permet de bouger avec scroll */
+  top: 50px; /* position initiale */
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
   opacity: 0;
-  transform: translateY(0px);
   transition: opacity 1.5s ease, transform 1.5s ease;
   background: rgba(20,20,20,0.6);
   padding: 30px 50px;
@@ -79,7 +80,6 @@ html,body {
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
-  position: relative;
 }
 
 .title {
@@ -160,10 +160,10 @@ animate();
 
 // clic sur le premier GUI : affichage écran noir + GUI titre
 document.addEventListener('click', () => {
-  // enlever le floatingBox
+  // cacher le premier GUI
   box.style.display = 'none';
 
-  // activer le scroll pour le fade du GUI titre
+  // activer le scroll pour permettre fade + translation du second GUI
   document.body.style.overflowY = 'scroll';
 
   // faire apparaître l'écran noir
@@ -176,7 +176,7 @@ document.addEventListener('click', () => {
   }, 300);
 });
 
-// scroll : GUI titre monte et disparaît
+// scroll : GUI titre monte et disparaît progressivement
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   const fadeStart = 0;
@@ -186,9 +186,8 @@ window.addEventListener('scroll', () => {
   progress = Math.min(Math.max(progress, 0), 1);
 
   blackContent.style.opacity = 1 - progress;
-  blackContent.style.transform = `translateY(${-progress * 100}px)`;
+  blackContent.style.transform = `translate(-50%, ${-progress * 100}px)`;
 });
 </script>
 </body>
 </html>
-
