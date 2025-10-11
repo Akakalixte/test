@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8" />
@@ -11,7 +11,7 @@ html,body {
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  overflow: hidden;
+  overflow-x: hidden;
   cursor: none;
 }
 
@@ -63,26 +63,21 @@ html,body {
   transition: opacity 1.5s ease;
   z-index: 1000;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 /* Contenu du noir avec GUI stylisé */
 #blackContent {
   text-align: center;
-  opacity: 0;
-  animation: fadeIn 2s ease forwards;
-  animation-delay: 0.8s;
+  opacity: 0; /* apparition progressive */
   background: rgba(20,20,20,0.6);
   padding: 30px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
+  transition: opacity 0.5s ease;
 }
 
 .title {
@@ -161,10 +156,35 @@ function animate() {
 }
 animate();
 
+// apparition progressive du GUI
+function fadeInGUI() {
+  let opacity = 0;
+  const interval = setInterval(() => {
+    opacity += 0.02;
+    if(opacity >= 1){
+      opacity = 1;
+      clearInterval(interval);
+    }
+    blackContent.style.opacity = opacity;
+  }, 20);
+}
+
 // transition au clic
 document.addEventListener('click', () => {
   blackScreen.style.pointerEvents = 'auto';
   blackScreen.style.opacity = '1';
+  fadeInGUI();
+});
+
+// effet de scroll : plus on scroll, plus le GUI disparaît
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const fadeStart = 50; // scrollY à partir duquel commence le fondu
+  const fadeEnd = 300; // scrollY à partir duquel GUI est totalement invisible
+
+  let opacity = 1 - (scrollY - fadeStart) / (fadeEnd - fadeStart);
+  opacity = Math.max(0, Math.min(1, opacity));
+  blackContent.style.opacity = opacity;
 });
 </script>
 </body>
