@@ -3,32 +3,54 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Akakalixte - Phobia est Arma</title>
+<title>Akakalixte — Phobia est Arma</title>
 <style>
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  height: 200%; /* pour permettre le scroll */
   background: #000;
-  color: #fff;
   font-family: 'Times New Roman', serif;
+  color: #fff;
+  overflow-x: hidden;
   cursor: none;
-  overflow-y: scroll;
 }
 
-#blackContent {
+/* GUI titre */
+#titleContainer {
+  position: fixed; /* reste visible et centré */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(20,20,20,0.6);
+  padding: 30px 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
   text-align: center;
-  margin-top: 150px;
+  opacity: 0;
+  transition: opacity 1.5s ease, transform 0.5s ease;
+  z-index: 10;
 }
 
 .title {
   font-size: 48px;
-  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow:
+    0 0 10px #fff,
+    0 0 20px #fff,
+    0 0 30px #fff;
+  font-weight: 700;
+  margin-bottom: 12px;
 }
 
 .subtitle {
   font-size: 18px;
+  letter-spacing: 1.5px;
   color: #ccc;
   font-style: italic;
-  margin-top: 10px;
   position: relative;
 }
 
@@ -43,9 +65,36 @@ body {
 </style>
 </head>
 <body>
-<div id="blackContent">
+
+<div id="titleContainer">
   <div class="title">Akakalixte</div>
   <div class="subtitle">Phobia est Arma</div>
 </div>
+
+<script>
+const titleContainer = document.getElementById('titleContainer');
+
+// Fade-in initial
+window.addEventListener('load', () => {
+  titleContainer.style.opacity = '1';
+});
+
+// Scroll effect
+let lastScrollY = window.scrollY;
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const fadeDistance = 300; // distance pour fade-out
+
+  let progress = scrollY / fadeDistance;
+  progress = Math.min(Math.max(progress, 0), 1);
+
+  // Opacité et translation
+  titleContainer.style.opacity = 1 - progress;
+  titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * 100}px))`;
+
+  lastScrollY = scrollY;
+});
+</script>
 </body>
 </html>
+
