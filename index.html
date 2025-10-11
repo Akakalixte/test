@@ -55,7 +55,7 @@ html,body {
 
 /* Écran noir après clic */
 #blackScreen {
-  position: relative; /* pour que le titre soit scrollable */
+  position: relative;
   width: 100%;
   min-height: 100vh;
   background: #000;
@@ -67,13 +67,13 @@ html,body {
 
 /* GUI titre */
 #blackContent {
-  position: absolute; /* permet de bouger avec scroll */
-  top: 50px; /* position initiale */
+  position: fixed; /* centré initialement */
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   text-align: center;
   opacity: 0;
-  transition: opacity 1.5s ease, transform 1.5s ease;
+  transition: opacity 1.5s ease, transform 1s ease;
   background: rgba(20,20,20,0.6);
   padding: 30px 50px;
   border-radius: 14px;
@@ -186,7 +186,7 @@ window.addEventListener('scroll', () => {
   progress = Math.min(Math.max(progress, 0), 1);
 
   blackContent.style.opacity = 1 - progress;
-  blackContent.style.transform = `translate(-50%, ${-progress * 100}px)`;
+  blackContent.style.transform = `translate(-50%, calc(-50% - ${progress * 100}px))`;
 });
 </script>
 </body>
