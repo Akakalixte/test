@@ -15,7 +15,7 @@ html,body {
   cursor: none;
 }
 
-/* Conteneur principal */
+/* Conteneur du texte d'accueil */
 #floatingBox {
   position: absolute;
   top: 50%;
@@ -32,21 +32,18 @@ html,body {
   pointer-events: none;
 }
 
-/* Texte principal */
 #floatingBox .main {
   font-size: 26px;
   letter-spacing: 2px;
   margin-bottom: 8px;
 }
 
-/* Texte secondaire */
 #floatingBox .sub {
   font-size: 14px;
   color: #ccc;
   font-style: italic;
 }
 
-/* Définition */
 #floatingBox .definition {
   margin-top: 8px;
   font-size: 13px;
@@ -56,15 +53,56 @@ html,body {
   max-width: 500px;
 }
 
-/* Écran noir */
+/* Écran noir après clic */
 #blackScreen {
   position: fixed;
   inset: 0;
   background: #000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1s ease;
+  transition: opacity 1.5s ease;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenu du noir */
+#blackContent {
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 2s ease forwards;
+  animation-delay: 0.8s;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.title {
+  font-size: 42px;
+  letter-spacing: 3px;
+  color: #f8f8f8;
+  text-shadow: 0 0 15px rgba(255,255,255,0.2);
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  color: #b8b8b8;
+  margin-top: 6px;
+  font-style: italic;
+  position: relative;
+}
+
+.subtitle::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+  margin: 8px auto 0;
 }
 </style>
 </head>
@@ -79,29 +117,33 @@ html,body {
   </div>
 </div>
 
-<div id="blackScreen"></div>
+<div id="blackScreen">
+  <div id="blackContent">
+    <div class="title">Akakalixte</div>
+    <div class="subtitle">Phobia est Arma</div>
+  </div>
+</div>
 
 <script>
 const box = document.getElementById('floatingBox');
 const blackScreen = document.getElementById('blackScreen');
+const blackContent = document.getElementById('blackContent');
 
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
 let currentX = mouseX;
 let currentY = mouseY;
 
-// Suivi limité du mouvement
+// suivi de la souris limité
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 });
 
 function animate() {
-  // Interpolation fluide
   currentX += (mouseX - currentX) * 0.03;
   currentY += (mouseY - currentY) * 0.03;
 
-  // Déplacement restreint autour du centre
   const offsetX = (currentX - window.innerWidth / 2) * 0.05;
   const offsetY = (currentY - window.innerHeight / 2) * 0.05;
 
@@ -110,7 +152,7 @@ function animate() {
 }
 animate();
 
-// Clique → transition vers le noir
+// transition au clic
 document.addEventListener('click', () => {
   blackScreen.style.pointerEvents = 'auto';
   blackScreen.style.opacity = '1';
@@ -118,4 +160,3 @@ document.addEventListener('click', () => {
 </script>
 </body>
 </html>
-
