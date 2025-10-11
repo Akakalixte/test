@@ -6,13 +6,12 @@
 <title>Akakalixte — Phobia est Arma</title>
 <style>
 html, body {
-  height: 200%; /* pour permettre le scroll */
+  height: 200%; /* espace pour les GUI suivants */
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
   overflow-x: hidden;
-  cursor: default;
 }
 
 /* Conteneur du titre principal */
@@ -29,7 +28,7 @@ html, body {
   backdrop-filter: blur(6px);
   text-align: center;
   opacity: 0;
-  transition: opacity 1.5s ease, transform 0.1s linear;
+  transition: opacity 1.5s ease, transform 1s ease;
   z-index: 10;
 }
 
@@ -38,10 +37,7 @@ html, body {
   font-size: 48px;
   letter-spacing: 4px;
   color: #fff;
-  text-shadow:
-    0 0 10px #fff,
-    0 0 20px #fff,
-    0 0 30px #fff;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
   font-weight: 700;
   margin-bottom: 12px;
 }
@@ -62,6 +58,32 @@ html, body {
   background: rgba(255,255,255,0.3);
   margin: 6px auto 0;
 }
+
+/* Conteneur des 4 GUI à révéler */
+#fourContainers {
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.smallGui {
+  background: rgba(20,20,20,0.6);
+  padding: 30px 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 24px;
+  min-width: 200px;
+}
 </style>
 </head>
 <body>
@@ -71,24 +93,43 @@ html, body {
   <div class="subtitle">Phobia est Arma</div>
 </div>
 
+<div id="fourContainers">
+  <div class="smallGui"></div>
+  <div class="smallGui"></div>
+  <div class="smallGui"></div>
+  <div class="smallGui"></div>
+</div>
+
 <script>
 const titleContainer = document.getElementById('titleContainer');
+const fourContainers = document.getElementById('fourContainers');
 
-// Fade-in initial
+// Fade-in du titre
 window.addEventListener('load', () => {
   titleContainer.style.opacity = '1';
-});
 
-// Scroll effect : disparaît complètement vers le haut
-const fadeDistance = window.innerHeight * 0.9; // distance pour disparition
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  let progress = scrollY / fadeDistance;
-  progress = Math.min(Math.max(progress, 0), 1);
+  // Attendre un peu puis lancer "scroll" automatique
+  setTimeout(() => {
+    const duration = 1500; // 1.5s pour monter et disparaître
+    let start = null;
+    const initialTop = 0; // transform initial = -50%
+    function animate(time) {
+      if (!start) start = time;
+      const progress = Math.min((time - start) / duration, 1);
 
-  // Opacité et translation proportionnelles au scroll
-  titleContainer.style.opacity = 1 - progress;
-  titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * window.innerHeight}px))`;
+      // translation vers le haut + fade
+      titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * window.innerHeight}px))`;
+      titleContainer.style.opacity = 1 - progress;
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        // une fois disparu, afficher les 4 GUI
+        fourContainers.style.opacity = '1';
+      }
+    }
+    requestAnimationFrame(animate);
+  }, 1000); // 1s d'attente avant de bouger
 });
 </script>
 </body>
