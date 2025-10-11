@@ -6,7 +6,7 @@
 <title>Akakalixte — Phobia est Arma</title>
 <style>
 html, body {
-  height: 200%;
+  height: 10000px; /* scroll infini simulé */
   margin: 0;
   background: #000;
   color: #fff;
@@ -111,10 +111,10 @@ const titleMove = 120;      // pixels que le titre monte
 const guiMove = 40;         // pixels que les 4 GUI descendent
 
 window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
+  let scrollY = window.scrollY;
 
-  // calcul de la progression de 0 à 1
-  let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
+  // Scroll infini : on boucle la progression entre 0 et fadeDistance
+  let progress = (scrollY % fadeDistance) / fadeDistance;
 
   // Titre : monte et disparaît
   titleContainer.style.transform = `translate(-50%, calc(-50% - ${progress * titleMove}px))`;
@@ -125,5 +125,8 @@ window.addEventListener('scroll', () => {
   fourContainers.style.opacity = `${progress}`;
 });
 </script>
+</body>
+</html>
+
 </body>
 </html>
