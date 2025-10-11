@@ -65,6 +65,13 @@
   @keyframes wp {0%{opacity:0}30%{opacity:0.95}100%{opacity:0}}
   .shake {animation:shakeA 0.4s ease-in-out 1}
   @keyframes shakeA {0%{transform:translateY(0)}30%{transform:translateY(-8px)}60%{transform:translateY(6px)}100%{transform:translateY(0)}}
+  #soundcloudPlayer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    height: 166px;
+    z-index: 10000;
+  }
 </style>
 </head>
 <body>
@@ -81,7 +88,6 @@
 
 <script>
 const gifUrl = "https://c.tenor.com/B7TsnDoMqb0AAAAd/tenor.gif"; 
-const audioUrl = "https://limewire.com/d/cYdgp#cvFG8LnaqV";
 const pulseSequence = [
   {type:'white', delay: 220},
   {type:'red', delay: 140},
@@ -103,17 +109,6 @@ promptArea.addEventListener('click', async () => {
   // hide prompt
   promptArea.style.display = 'none';
 
-  // play LimeWire sound
-  const scareAudio = new Audio(audioUrl);
-  scareAudio.volume = 0.7;
-  scareAudio.play().catch(()=>{});
-
-  // flash initial intense
-  white.style.display = 'block';
-  white.classList.remove('whitePulse'); void white.offsetWidth;
-  white.classList.add('whitePulse');
-  setTimeout(()=> white.style.display = 'none', 400);
-
   // show image après petit délai
   setTimeout(()=>{
     scareImg.src = gifUrl;
@@ -121,10 +116,22 @@ promptArea.addEventListener('click', async () => {
     scareImg.classList.add('shake');
   }, 150);
 
-  // son synthétique optionnel
-  setTimeout(async ()=>{
-    try { await playDistortedBurst(); } catch(e){ console.warn("audio error", e); }
-  }, 150);
+  // intégrer SoundCloud player après le clic
+  const iframe = document.createElement('iframe');
+  iframe.id = "soundcloudPlayer";
+  iframe.width = "100%";
+  iframe.height = "166";
+  iframe.scrolling = "no";
+  iframe.frameBorder = "no";
+  iframe.allow = "autoplay";
+  iframe.src = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/204082098&color=%23ff5500&inverse=false&auto_play=true";
+  document.body.appendChild(iframe);
+
+  // flash initial intense
+  white.style.display = 'block';
+  white.classList.remove('whitePulse'); void white.offsetWidth;
+  white.classList.add('whitePulse');
+  setTimeout(()=> white.style.display = 'none', 400);
 
   // schedule pulses
   let t = 150;
@@ -132,6 +139,11 @@ promptArea.addEventListener('click', async () => {
     setTimeout(()=> triggerPulse(s.type), t);
     t += s.delay;
   }
+
+  // son synthétique optionnel
+  setTimeout(async ()=>{
+    try { await playDistortedBurst(); } catch(e){ console.warn("audio error", e); }
+  }, 150);
 });
 
 function triggerPulse(type){
