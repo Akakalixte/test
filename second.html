@@ -5,20 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Akakalixte — Phobia est Arma</title>
 <style>
+/* ----------------------------------------------------------------
+   Styles Généraux & Structure
+   ---------------------------------------------------------------- */
 html, body {
-  height: 200%;
+  /* La hauteur du body détermine la distance de défilement nécessaire */
+  height: 200vh; /* Utilisation de vh pour une hauteur relative à la fenêtre */
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
   overflow-x: hidden;
+  /* Scroll-behavior smooth pour un défilement plus agréable (optionnel) */
+  scroll-behavior: smooth; 
 }
 
-/* Conteneur du titre principal */
+/* ----------------------------------------------------------------
+   Conteneur du Titre Principal (GUI 1)
+   ---------------------------------------------------------------- */
 #titleContainer {
   position: fixed;
   top: 50%;
   left: 50%;
+  /* Transform initial */
   transform: translate(-50%, -50%);
   background: rgba(20, 20, 20, 0.6);
   padding: 40px 60px;
@@ -27,12 +36,51 @@ html, body {
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
-  opacity: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
   z-index: 10;
 }
 
-/* Styles titres */
+/* ----------------------------------------------------------------
+   Conteneur des 4 GUI (GUI 2)
+   ---------------------------------------------------------------- */
+#fourContainers {
+  position: fixed; /* Rendre fixe comme le titre pour une synchronisation facile */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centré comme le titre */
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  text-align: center;
+  opacity: 0; /* Caché par défaut */
+  pointer-events: none; /* Empêche les clics sur l'élément caché */
+  transition: opacity 0.5s ease;
+  z-index: 5; /* Z-index plus bas que le titre */
+}
+
+/* Styles pour les petits GUI */
+.smallGui {
+  background: rgba(20,20,20,0.6);
+  padding: 30px 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 24px;
+  min-width: 200px;
+  /* Ajout de contenu pour les distinguer */
+  content: ""; 
+}
+
+.smallGui:nth-child(1)::after { content: "GUI 1"; }
+.smallGui:nth-child(2)::after { content: "GUI 2"; }
+.smallGui:nth-child(3)::after { content: "GUI 3"; }
+.smallGui:nth-child(4)::after { content: "GUI 4"; }
+
+/* ----------------------------------------------------------------
+   Styles Titres (non modifiés)
+   ---------------------------------------------------------------- */
 .title {
   font-size: 48px;
   letter-spacing: 4px;
@@ -59,31 +107,6 @@ html, body {
   margin: 6px auto 0;
 }
 
-/* Conteneur des 4 GUI */
-#fourContainers {
-  position: absolute;
-  top: 150%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.smallGui {
-  background: rgba(20,20,20,0.6);
-  padding: 30px 50px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-  color: #fff;
-  font-size: 24px;
-  min-width: 200px;
-}
 </style>
 </head>
 <body>
@@ -101,6 +124,46 @@ html, body {
 </div>
 
 <script>
+const titleContainer = document.getElementById('titleContainer');
+const fourContainers = document.getElementById('fourContainers');
+
+// Détermine le point de bascule de l'animation
+// 100vh représente une hauteur de fenêtre complète
+const scrollThreshold = window.innerHeight * 0.5; // Bascule à mi-chemin de la première "page"
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+
+  if (scrollY > scrollThreshold) {
+    // Si l'utilisateur a dépassé le seuil de défilement (vers le bas)
+    
+    // 1. Masquer le titre
+    titleContainer.style.opacity = '0';
+    // Rendre le titre non cliquable une fois invisible
+    titleContainer.style.pointerEvents = 'none'; 
+    
+    // 2. Afficher les GUI
+    fourContainers.style.opacity = '1';
+    // Rendre les GUI cliquables
+    fourContainers.style.pointerEvents = 'auto'; 
+
+  } else {
+    // Si l'utilisateur est au-dessus du seuil de défilement (vers le haut)
+
+    // 1. Afficher le titre
+    titleContainer.style.opacity = '1';
+    titleContainer.style.pointerEvents = 'auto';
+    
+    // 2. Masquer les GUI
+    fourContainers.style.opacity = '0';
+    fourContainers.style.pointerEvents = 'none';
+  }
+
+  // NOTE: On n'a plus besoin de 'lastScrollY' car la logique est basée sur la position absolue 'scrollY' par rapport au 'scrollThreshold', ce qui élimine les bugs de "glitch" et synchronise les GUI.
+});
+</script>
+</body>
+</html><script>
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
