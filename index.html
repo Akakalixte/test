@@ -12,7 +12,6 @@ html,body {
   color: #fff;
   font-family: 'Times New Roman', serif;
   overflow: hidden; /* pas de scroll ici */
-  /* Invisible la souris, en forçant la règle */
   cursor: none !important; 
 }
 
@@ -26,11 +25,13 @@ html,body {
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 25px 40px;
   border-radius: 12px;
+  /* box-shadow initial, sera ajusté par JS */
   box-shadow: 0 0 20px rgba(255,255,255,0.05);
+  /* backdrop-filter initial, sera ajusté par JS */
   backdrop-filter: blur(6px);
   text-align: center;
-  transition: transform 0.15s ease-out;
-  /* Rend la boîte transparente aux clics pour que le body reçoive l'événement */
+  /* Transition pour un effet doux des filtres */
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, backdrop-filter 0.15s ease-out;
   pointer-events: none; 
   z-index: 10;
 }
@@ -76,37 +77,54 @@ let mouseY = window.innerHeight / 2;
 let currentX = mouseX;
 let currentY = mouseY;
 
-// suivi de la souris pour l'effet de la boîte
+// Pour calculer la vitesse et ajuster le flou
+let lastX = currentX;
+let lastY = currentY;
+
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 });
 
 function animate() {
+  lastX = currentX; // Stocke la position précédente
+  lastY = currentY;
+
   currentX += (mouseX - currentX) * 0.03;
   currentY += (mouseY - currentY) * 0.03;
 
   const offsetX = (currentX - window.innerWidth / 2) * 0.05;
   const offsetY = (currentY - window.innerHeight / 2) * 0.05;
 
-  // L'animation suit la souris
   box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+
+  // Calcul de la "vitesse" du déplacement de la boîte
+  const deltaX = Math.abs(currentX - lastX);
+  const deltaY = Math.abs(currentY - lastY);
+  const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // Distance parcourue
+
+  // Ajustement du flou et de l'ombre en fonction de la vitesse
+  // Le flou est très léger, max 2px
+  const blurAmount = Math.min(speed * 0.5, 2); // Max 2px de flou
+  const shadowSpread = Math.min(speed * 1.5, 30); // Max 30px d'étalement pour l'ombre
+
+  // On applique le flou sur le backdrop et on change l'ombre
+  // Le flou initial (6px) est toujours là, on l'augmente un peu au mouvement
+  box.style.backdropFilter = `blur(${6 + blurAmount}px)`;
+  box.style.boxShadow = `0 0 ${20 + shadowSpread}px rgba(255,255,255,${0.05 + (blurAmount * 0.02)})`;
+
   requestAnimationFrame(animate);
 }
 animate();
 
-// Clic sur l'ensemble de la page (le body) : ouvre la deuxième page
 document.body.addEventListener('click', () => {
-  // Option : ajouter une petite transition visuelle avant de naviguer
   document.body.style.transition = 'opacity 0.5s ease-out';
   document.body.style.opacity = '0'; 
 
-  // Naviguer après la transition
   setTimeout(() => {
-    window.location.href = 'second.html'; // Mettez le nom exact de votre deuxième page
+    window.location.href = 'second.html'; 
   }, 500); 
 });
 </script>
 </body>
-</html>
 </html>
