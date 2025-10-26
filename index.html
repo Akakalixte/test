@@ -12,7 +12,7 @@ html,body {
   color: #fff;
   font-family: 'Times New Roman', serif;
   overflow: hidden; /* pas de scroll ici */
-  cursor: none;
+  cursor: pointer; /* Indique que la page entière est cliquable */
 }
 
 /* Conteneur du texte d'accueil */
@@ -29,7 +29,8 @@ html,body {
   backdrop-filter: blur(6px);
   text-align: center;
   transition: transform 0.15s ease-out;
-  pointer-events: auto;
+  /* IMPORTANT: Permet aux clics sur le body de passer à travers cet élément */
+  pointer-events: none; 
   z-index: 10;
 }
 
@@ -58,7 +59,7 @@ html,body {
 <body>
 
 <div id="floatingBox">
-  <div class="main">Click here...</div>
+  <div class="main">Click anywhere...</div>
   <div class="sub">Deus — animam — tuam — servet</div>
   <div class="definition">
     A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
@@ -74,7 +75,7 @@ let mouseY = window.innerHeight / 2;
 let currentX = mouseX;
 let currentY = mouseY;
 
-// suivi de la souris pour le premier GUI
+// suivi de la souris pour l'effet de la boîte
 document.addEventListener('mousemove', e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
@@ -87,16 +88,23 @@ function animate() {
   const offsetX = (currentX - window.innerWidth / 2) * 0.05;
   const offsetY = (currentY - window.innerHeight / 2) * 0.05;
 
+  // L'animation suit la souris
   box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
   requestAnimationFrame(animate);
 }
 animate();
 
-// clic sur le premier GUI : ouvre la deuxième page
-box.addEventListener('click', () => {
-  window.location.href = 'second.html'; // mettre le nom exact de ta deuxième page
+// Clic sur l'ensemble de la page (le body) : ouvre la deuxième page
+document.body.addEventListener('click', () => {
+  // Option : ajouter une petite transition visuelle avant de naviguer
+  document.body.style.transition = 'opacity 0.5s ease-out';
+  document.body.style.opacity = '0'; 
+
+  // Naviguer après la transition
+  setTimeout(() => {
+    window.location.href = 'second.html'; // Mettez le nom exact de votre deuxième page
+  }, 500); 
 });
 </script>
 </body>
 </html>
-
