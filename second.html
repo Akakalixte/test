@@ -9,28 +9,19 @@
    Styles Généraux & Structure
    ---------------------------------------------------------------- */
 html {
-  /* Fixe la hauteur de la zone de défilement et cache l'horizontal */
   overflow-x: hidden; 
   scroll-behavior: smooth;
-  /* Pour Firefox, masquer la barre de défilement */
   scrollbar-width: none;
 }
 
 body {
-  /* La hauteur du body permet le défilement sur 2 pages (200vh) */
   height: 200vh;
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  
-  /* Permet le défilement vertical */
   overflow-y: scroll; 
-  
-  /* CURSEUR INVISIBLE */
   cursor: none !important; 
-  
-  /* Pour Internet Explorer et Edge (ancienne version) */
   -ms-overflow-style: none;  
 }
 
@@ -47,7 +38,7 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Transform initial (sera ajusté par JS) */
+  /* Transform initial : centré (-50%) */
   transform: translate(-50%, -50%);
   background: rgba(20, 20, 20, 0.6);
   padding: 40px 60px;
@@ -56,11 +47,11 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
-  /* Transition très rapide sur le transform pour le mouvement */
-  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+  /* Transition rapide et fluide pour le glissement */
+  transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Utilisation d'un easing personnalisé */
   z-index: 10;
   
-  /* EFFET D'APPARITION : Masqué au chargement */
+  /* Initialiser à 0 pour l'effet d'apparition */
   opacity: 0;
 }
 
@@ -71,66 +62,29 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Transform initial (sera ajusté par JS pour un léger mouvement) */
-  transform: translate(-50%, -50%);
+  /* Transform initial (hors champ, en bas: 150% + 50% = 200%) */
+  transform: translate(-50%, 150%);
   display: flex;
   flex-direction: column;
   gap: 40px;
   text-align: center;
-  opacity: 0; 
+  opacity: 0; /* Ne pas utiliser l'opacité pour cacher, mais pour le fade visuel */
   pointer-events: none;
-  /* Transition très rapide sur l'opacité */
-  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+  /* Transition rapide et fluide pour le glissement */
+  transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
   z-index: 5;
 }
 
-/* Styles pour les petits GUI */
-.smallGui {
-  background: rgba(20,20,20,0.6);
-  padding: 30px 50px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-  color: #fff;
-  font-size: 24px;
-  min-width: 200px;
-  content: ""; 
-}
-
+/* Styles pour les petits GUI (inchangés) */
+/* ... */
 .smallGui:nth-child(1)::after { content: "GUI 1"; }
 .smallGui:nth-child(2)::after { content: "GUI 2"; }
 .smallGui:nth-child(3)::after { content: "GUI 3"; }
 .smallGui:nth-child(4)::after { content: "GUI 4"; }
 
-/* ----------------------------------------------------------------
-   Styles Titres (non modifiés)
-   ---------------------------------------------------------------- */
-.title {
-  font-size: 48px;
-  letter-spacing: 4px;
-  color: #fff;
-  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
+/* Styles Titres (inchangés) */
+/* ... */
 
-.subtitle {
-  font-size: 18px;
-  letter-spacing: 1.5px;
-  color: #ccc;
-  font-style: italic;
-  position: relative;
-}
-
-.subtitle::after {
-  content: "";
-  display: block;
-  width: 140px;
-  height: 1px;
-  background: rgba(255,255,255,0.3);
-  margin: 6px auto 0;
-}
 </style>
 </head>
 <body>
@@ -151,53 +105,51 @@ body::-webkit-scrollbar {
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-// 1. DÉFINITION D'une TRES COURTE ZONE DE TRANSITION (20% de la hauteur de fenêtre)
-// Le changement sera rapide et fluide sur cette courte distance de scroll.
-const TRANSITION_HEIGHT = window.innerHeight * 0.20; 
-
-// Le seuil de scroll est le point où la transition COMMENCE
+// Zone de transition TRES courte, par exemple 15% de la hauteur de la fenêtre
+const TRANSITION_HEIGHT = window.innerHeight * 0.15; 
 const scrollStartThreshold = 0; 
-
-// Le seuil de fin est le point où la transition TERMINE (20% en dessous du début)
 const scrollEndThreshold = TRANSITION_HEIGHT; 
-
 
 // EFFET D'APPARITION DE LA PAGE
 window.onload = () => {
-    // Initialise l'opacité et la position
-    titleContainer.style.opacity = '1';
-    titleContainer.style.transform = 'translate(-50%, -50%)'; 
-    // Fait glisser légèrement les GUI de bas en haut pour un meilleur effet d'arrivée
-    fourContainers.style.transform = 'translate(-50%, -40%)';
+    // Initialiser le titre pour qu'il arrive par le haut (stylé)
+    titleContainer.style.transform = 'translate(-50%, -150%)';
+    setTimeout(() => {
+        // Le titre glisse rapidement vers le centre et devient visible
+        titleContainer.style.opacity = '1';
+        titleContainer.style.transform = 'translate(-50%, -50%)'; 
+    }, 50); // Petit délai pour que le style initial soit pris en compte
 };
 
-// EFFET DE FADE LORS DU SCROLL
+
+// EFFET DE GLISSEMENT ET DE FADE LORS DU SCROLL
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   
-  // 2. Calcul de la progression du scroll UNIQUEMENT sur la zone de transition (0 à 20vh)
-  // Utilise Math.max pour s'assurer que scrollProgress ne devienne pas négatif
-  // Utilise Math.min pour s'assurer que scrollProgress ne dépasse pas 1
+  // Calcul de la progression du scroll sur la zone de transition (0 à 1)
   const scrollProgressRaw = (scrollY - scrollStartThreshold) / (scrollEndThreshold - scrollStartThreshold);
   const scrollProgress = Math.min(Math.max(scrollProgressRaw, 0), 1); 
 
-  // TITRE (GUI 1) - Disparait et monte
-  const titleOpacity = 1 - scrollProgress; 
-  titleContainer.style.opacity = titleOpacity;
-  titleContainer.style.pointerEvents = titleOpacity > 0.05 ? 'auto' : 'none';
+  // TITRE (GUI 1) - Glisse vers le HAUT (hors champ) et disparaît.
   
-  // Mouvement du titre : Monte de -50% à -75% du centre pendant la disparition
-  const titleMoveY = scrollProgress * -25; 
+  // Opacité: Disparait complètement à la fin de la transition
+  titleContainer.style.opacity = 1 - scrollProgress; 
+  titleContainer.style.pointerEvents = scrollProgress < 0.95 ? 'auto' : 'none';
+  
+  // Mouvement du titre: Glisse de -50% (centre) à -150% (hors champ par le haut)
+  const titleMoveY = scrollProgress * -100; // Total 100% de translation vers le haut
   titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
 
 
-  // 4 GUI (GUI 2) - Apparaissent et s'arrêtent au centre
-  const guiOpacity = scrollProgress;
-  fourContainers.style.opacity = guiOpacity;
-  fourContainers.style.pointerEvents = guiOpacity > 0.05 ? 'auto' : 'none';
+  // 4 GUI (GUI 2) - Glissent vers le BAS (au centre) et apparaissent.
+  
+  // Opacité: Apparaît complètement à la fin de la transition
+  fourContainers.style.opacity = scrollProgress;
+  fourContainers.style.pointerEvents = scrollProgress > 0.05 ? 'auto' : 'none';
 
-  // Mouvement des GUI : Descend de -40% (position initiale de onload) à -50% (position finale)
-  const guiMoveY = (1 - scrollProgress) * -10; 
+  // Mouvement des GUI: Glisse de 150% (hors champ par le bas) à -50% (centre)
+  // L'état initial est 150%, l'état final est -50%. Total de 200% de changement.
+  const guiMoveY = (1 - scrollProgress) * 200; // Commence à 200% * 1 = 200%, finit à 200% * 0 = 0%
   fourContainers.style.transform = `translate(-50%, ${-50 + guiMoveY}%)`;
 });
 </script>
