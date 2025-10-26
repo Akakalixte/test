@@ -9,7 +9,7 @@
    Styles Généraux & Structure
    ---------------------------------------------------------------- */
 html, body {
-  /* La hauteur du body détermine la distance de défilement nécessaire */
+  /* La hauteur du body permet le défilement sur 2 pages */
   height: 200vh;
   margin: 0;
   background: #000;
@@ -17,11 +17,28 @@ html, body {
   font-family: 'Times New Roman', serif;
   scroll-behavior: smooth;
   
-  /* SUPPRIMER LA SOURIS (curseur) */
-  cursor: none !important; 
+  /* Permet le défilement vertical, mais cache l'horizontal */
+  overflow-x: hidden; 
+  overflow-y: scroll; /* Doit être "scroll" ou "auto" pour permettre l'animation */
   
-  /* SUPPRIMER LA BARRE DE SCROLL (défilement horizontal et vertical) */
-  overflow: hidden; /* Cache les deux barres de défilement (y et x) */
+  /* 1. FORCER L'INVISIBILITÉ DE LA SOURIS */
+  cursor: none !important; 
+}
+
+/* 2. MASQUER LA BARRE DE DÉFILEMENT (CROSS-BROWSERS) */
+/* Pour Chrome, Safari, Edge (WebKit) */
+body::-webkit-scrollbar {
+    display: none; /* Cache la barre de défilement */
+}
+
+/* Pour Internet Explorer et Edge (ancienne version) */
+body {
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* Pour Firefox */
+html {
+    scrollbar-width: none;  /* Firefox */
 }
 
 /* ----------------------------------------------------------------
@@ -39,7 +56,6 @@ html, body {
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
-  /* Transition pour l'effet de fade/mouvement */
   transition: opacity 0.5s ease, transform 0.5s ease;
   z-index: 10;
   
@@ -59,7 +75,7 @@ html, body {
   flex-direction: column;
   gap: 40px;
   text-align: center;
-  opacity: 0; /* Caché par défaut pour le fade */
+  opacity: 0; 
   pointer-events: none;
   transition: opacity 0.5s ease;
   z-index: 5;
@@ -76,7 +92,6 @@ html, body {
   color: #fff;
   font-size: 24px;
   min-width: 200px;
-  /* Ajout de contenu pour les distinguer */
   content: ""; 
 }
 
@@ -133,43 +148,37 @@ html, body {
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-// 1. DÉFINITION DU SEUIL DE SCROLL
-// Nous avons besoin de 200vh de hauteur de page. Le seuil de bascule est à 100vh.
+// DÉFINITION DU SEUIL DE SCROLL (hauteur d'une fenêtre)
 const scrollThreshold = window.innerHeight; 
 
-// 2. EFFET D'APPARITION DE LA PAGE
-// Fait apparaître le titre au chargement
+// EFFET D'APPARITION DE LA PAGE (Déjà fonctionnel)
 window.onload = () => {
-    // Rend le titre visible (initialement opacity: 0 en CSS)
+    // Rend le titre visible (passe de opacity: 0 à 1)
     titleContainer.style.opacity = '1';
-    // Ajoute un effet de translation (optionnel, pour faire "glisser" le titre)
     titleContainer.style.transform = 'translate(-50%, -50%)'; 
 };
 
-// 3. EFFET DE FADE LORS DU SCROLL
+// EFFET DE FADE LORS DU SCROLL
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   
-  // Calcul du facteur de progression du scroll sur la première "page" (0 à 100vh)
-  // Clamp: S'assure que la valeur reste entre 0 et 1
+  // Calcul de la progression du scroll sur la première "page" (0 à 100vh)
   const scrollProgress = Math.min(scrollY / scrollThreshold, 1); 
 
   // TITRE (GUI 1)
-  // Opacité : Diminue de 1 à 0
   const titleOpacity = 1 - scrollProgress; 
   titleContainer.style.opacity = titleOpacity;
-  titleContainer.style.pointerEvents = titleOpacity > 0 ? 'auto' : 'none';
+  titleContainer.style.pointerEvents = titleOpacity > 0.05 ? 'auto' : 'none'; // Légère marge pour le pointer events
   
-  // Déplacement : Bouge légèrement vers le haut pendant la disparition (optionnel)
-  const titleMoveY = scrollProgress * -50; // Déplace de 0 à -50%
+  // Déplacement : Bouge légèrement vers le haut pendant la disparition
+  const titleMoveY = scrollProgress * -50; 
   titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
 
 
   // 4 GUI (GUI 2)
-  // Opacité : Augmente de 0 à 1
   const guiOpacity = scrollProgress;
   fourContainers.style.opacity = guiOpacity;
-  fourContainers.style.pointerEvents = guiOpacity > 0 ? 'auto' : 'none';
+  fourContainers.style.pointerEvents = guiOpacity > 0.05 ? 'auto' : 'none'; // Légère marge pour le pointer events
 });
 </script>
 </body>
