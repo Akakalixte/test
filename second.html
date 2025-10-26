@@ -19,7 +19,10 @@ body {
   margin: 0;
   background: #000;
   color: #fff;
-  font-family: 'Times New Roman', serif;
+  /* NOUVEAU : Police d'écriture ancienne/stylisée */
+  font-family: 'Georgia', serif; 
+  /* Vous pouvez aussi utiliser 'Palatino Linotype', 'Garamond' ou charger une police antique */
+  
   overflow-y: scroll; 
   cursor: none !important; 
   -ms-overflow-style: none;  
@@ -38,7 +41,6 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Transform initial : centré (-50%) */
   transform: translate(-50%, -50%);
   background: rgba(20, 20, 20, 0.6);
   padding: 40px 60px;
@@ -47,11 +49,8 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
-  /* Transition rapide et fluide pour le glissement */
-  transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Utilisation d'un easing personnalisé */
+  transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 10;
-  
-  /* Initialiser à 0 pour l'effet d'apparition */
   opacity: 0;
 }
 
@@ -62,29 +61,72 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Transform initial (hors champ, en bas: 150% + 50% = 200%) */
   transform: translate(-50%, 150%);
   display: flex;
   flex-direction: column;
   gap: 40px;
   text-align: center;
-  opacity: 0; /* Ne pas utiliser l'opacité pour cacher, mais pour le fade visuel */
+  opacity: 0; 
   pointer-events: none;
-  /* Transition rapide et fluide pour le glissement */
   transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
   z-index: 5;
 }
 
-/* Styles pour les petits GUI (inchangés) */
-/* ... */
+/* Styles pour les petits GUI */
+.smallGui {
+  background: rgba(20,20,20,0.6);
+  padding: 30px 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 24px;
+  min-width: 200px;
+  content: ""; 
+}
+
 .smallGui:nth-child(1)::after { content: "GUI 1"; }
 .smallGui:nth-child(2)::after { content: "GUI 2"; }
 .smallGui:nth-child(3)::after { content: "GUI 3"; }
 .smallGui:nth-child(4)::after { content: "GUI 4"; }
 
-/* Styles Titres (inchangés) */
-/* ... */
+/* ----------------------------------------------------------------
+   Styles Titres
+   ---------------------------------------------------------------- */
+.title {
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 12px;
+  
+  /* NOUVEAU : EFFET DE GLOW sur le titre */
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 10px rgba(255, 255, 255, 0.7),
+    0 0 20px #fff,
+    0 0 40px #fff;
+}
 
+.subtitle {
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  color: #ccc;
+  font-style: italic;
+  position: relative;
+  /* Ajustement de l'ombre du sous-titre pour moins de glow */
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); 
+}
+
+.subtitle::after {
+  content: "";
+  display: block;
+  width: 140px;
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+  margin: 6px auto 0;
+}
 </style>
 </head>
 <body>
@@ -105,51 +147,41 @@ body::-webkit-scrollbar {
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-// Zone de transition TRES courte, par exemple 15% de la hauteur de la fenêtre
 const TRANSITION_HEIGHT = window.innerHeight * 0.15; 
 const scrollStartThreshold = 0; 
 const scrollEndThreshold = TRANSITION_HEIGHT; 
 
 // EFFET D'APPARITION DE LA PAGE
 window.onload = () => {
-    // Initialiser le titre pour qu'il arrive par le haut (stylé)
     titleContainer.style.transform = 'translate(-50%, -150%)';
     setTimeout(() => {
-        // Le titre glisse rapidement vers le centre et devient visible
         titleContainer.style.opacity = '1';
         titleContainer.style.transform = 'translate(-50%, -50%)'; 
-    }, 50); // Petit délai pour que le style initial soit pris en compte
+    }, 50); 
 };
-
 
 // EFFET DE GLISSEMENT ET DE FADE LORS DU SCROLL
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   
-  // Calcul de la progression du scroll sur la zone de transition (0 à 1)
   const scrollProgressRaw = (scrollY - scrollStartThreshold) / (scrollEndThreshold - scrollStartThreshold);
   const scrollProgress = Math.min(Math.max(scrollProgressRaw, 0), 1); 
 
   // TITRE (GUI 1) - Glisse vers le HAUT (hors champ) et disparaît.
   
-  // Opacité: Disparait complètement à la fin de la transition
   titleContainer.style.opacity = 1 - scrollProgress; 
   titleContainer.style.pointerEvents = scrollProgress < 0.95 ? 'auto' : 'none';
   
-  // Mouvement du titre: Glisse de -50% (centre) à -150% (hors champ par le haut)
-  const titleMoveY = scrollProgress * -100; // Total 100% de translation vers le haut
+  const titleMoveY = scrollProgress * -100;
   titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
 
 
   // 4 GUI (GUI 2) - Glissent vers le BAS (au centre) et apparaissent.
   
-  // Opacité: Apparaît complètement à la fin de la transition
   fourContainers.style.opacity = scrollProgress;
   fourContainers.style.pointerEvents = scrollProgress > 0.05 ? 'auto' : 'none';
 
-  // Mouvement des GUI: Glisse de 150% (hors champ par le bas) à -50% (centre)
-  // L'état initial est 150%, l'état final est -50%. Total de 200% de changement.
-  const guiMoveY = (1 - scrollProgress) * 200; // Commence à 200% * 1 = 200%, finit à 200% * 0 = 0%
+  const guiMoveY = (1 - scrollProgress) * 200; 
   fourContainers.style.transform = `translate(-50%, ${-50 + guiMoveY}%)`;
 });
 </script>
