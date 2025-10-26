@@ -12,7 +12,8 @@ html,body {
   color: #fff;
   font-family: 'Times New Roman', serif;
   overflow: hidden; /* pas de scroll ici */
-  cursor: pointer; /* Indique que la page entière est cliquable */
+  /* Invisible la souris */
+  cursor: none; 
 }
 
 /* Conteneur du texte d'accueil */
@@ -29,7 +30,7 @@ html,body {
   backdrop-filter: blur(6px);
   text-align: center;
   transition: transform 0.15s ease-out;
-  /* IMPORTANT: Permet aux clics sur le body de passer à travers cet élément */
+  /* Rend la boîte transparente aux clics pour que le body reçoive l'événement */
   pointer-events: none; 
   z-index: 10;
 }
@@ -59,7 +60,7 @@ html,body {
 <body>
 
 <div id="floatingBox">
-  <div class="main">Click anywhere...</div>
+  <div class="main">Click here...</div>
   <div class="sub">Deus — animam — tuam — servet</div>
   <div class="definition">
     A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
