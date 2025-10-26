@@ -34,7 +34,7 @@ body::-webkit-scrollbar {
 
 
 /* ----------------------------------------------------------------
-   Conteneur du Titre Principal (GUI 1)
+   Conteneur du Titre Principal (GRAND CARRÉ CENTRAL)
    ---------------------------------------------------------------- */
 #titleContainer {
   position: fixed;
@@ -54,7 +54,7 @@ body::-webkit-scrollbar {
 }
 
 /* ----------------------------------------------------------------
-   Conteneur des 4 GUI (GUI 2)
+   Conteneur des 4 GUI 
    ---------------------------------------------------------------- */
 #fourContainers {
   position: fixed;
@@ -82,25 +82,33 @@ body::-webkit-scrollbar {
   color: #fff;
   font-size: 24px;
   min-width: 200px;
-  content: ""; 
+  /* Centrer le contenu (utile pour le nouveau texte) */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Supprimer le contenu généré précédemment */
+  content: none;
 }
 
-.smallGui:nth-child(1)::after { content: "GUI 1"; }
+/* Styles pour les GUIs 2, 3, 4 (remettent les labels par défaut) */
+.smallGui:not(:first-child) {
+    content: "";
+}
 .smallGui:nth-child(2)::after { content: "GUI 2"; }
 .smallGui:nth-child(3)::after { content: "GUI 3"; }
 .smallGui:nth-child(4)::after { content: "GUI 4"; }
 
 /* ----------------------------------------------------------------
-   Styles Titres
+   Styles Génériques pour le contenu
    ---------------------------------------------------------------- */
-.title {
+.gui-title {
   font-size: 48px;
   letter-spacing: 4px;
   color: #fff;
   font-weight: 700;
   margin-bottom: 12px;
-  
-  /* EFFET DE GLOW pour le titre "Nerd" */
+  /* EFFET DE GLOW (Pour le nouveau titre "Nerd") */
   text-shadow: 
     0 0 5px rgba(255, 255, 255, 0.7),
     0 0 10px rgba(255, 255, 255, 0.7),
@@ -108,17 +116,16 @@ body::-webkit-scrollbar {
     0 0 40px #fff;
 }
 
-.subtitle {
+.gui-subtitle {
   font-size: 18px;
   letter-spacing: 1.5px;
   color: #ccc;
   font-style: italic;
   position: relative;
-  /* Pas de GLOW pour le sous-titre */
   text-shadow: none; 
 }
 
-.subtitle::after {
+.gui-subtitle::after {
   content: "";
   display: block;
   width: 140px;
@@ -127,8 +134,7 @@ body::-webkit-scrollbar {
   margin: 6px auto 0;
 }
 
-/* NOUVEAU : Style pour le texte additionnel (le [soon]) */
-.extra-text {
+.gui-extra-text {
   margin-top: 20px;
   font-size: 16px;
   color: #888;
@@ -141,13 +147,16 @@ body::-webkit-scrollbar {
 <body>
 
 <div id="titleContainer">
-  <div class="title">Nerd</div>
-  <div class="subtitle">victoria — intelligenti</div>
-  <div class="extra-text">[soon]</div>
+  <div class="gui-title">Akakalixte</div>
+  <div class="gui-subtitle">Phobia est Arma</div>
 </div>
 
 <div id="fourContainers">
-  <div class="smallGui"></div>
+  <div class="smallGui">
+    <div class="gui-title">Nerd</div>
+    <div class="gui-subtitle">victoria — intelligenti</div>
+    <div class="gui-extra-text">[soon]</div>
+  </div>
   <div class="smallGui"></div>
   <div class="smallGui"></div>
   <div class="smallGui"></div>
@@ -177,7 +186,7 @@ window.addEventListener('scroll', () => {
   const scrollProgressRaw = (scrollY - scrollStartThreshold) / (scrollEndThreshold - scrollStartThreshold);
   const scrollProgress = Math.min(Math.max(scrollProgressRaw, 0), 1); 
 
-  // TITRE (GUI 1) - Glisse vers le HAUT (hors champ) et disparaît.
+  // TITRE ORIGINAL (GRAND CARRÉ) - Glisse vers le HAUT (hors champ) et disparaît.
   
   titleContainer.style.opacity = 1 - scrollProgress; 
   titleContainer.style.pointerEvents = scrollProgress < 0.95 ? 'auto' : 'none';
@@ -186,7 +195,7 @@ window.addEventListener('scroll', () => {
   titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
 
 
-  // 4 GUI (GUI 2) - Glissent vers le BAS (au centre) et apparaissent.
+  // 4 GUI (Y compris le GUI 1 modifié) - Glissent vers le BAS (au centre) et apparaissent.
   
   fourContainers.style.opacity = scrollProgress;
   fourContainers.style.pointerEvents = scrollProgress > 0.05 ? 'auto' : 'none';
