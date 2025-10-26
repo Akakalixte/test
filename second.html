@@ -19,9 +19,8 @@ body {
   margin: 0;
   background: #000;
   color: #fff;
-  /* NOUVEAU : Police d'écriture ancienne/stylisée */
+  /* Police d'écriture ancienne/stylisée */
   font-family: 'Georgia', serif; 
-  /* Vous pouvez aussi utiliser 'Palatino Linotype', 'Garamond' ou charger une police antique */
   
   overflow-y: scroll; 
   cursor: none !important; 
@@ -101,7 +100,7 @@ body::-webkit-scrollbar {
   font-weight: 700;
   margin-bottom: 12px;
   
-  /* NOUVEAU : EFFET DE GLOW sur le titre */
+  /* EFFET DE GLOW pour le titre "Nerd" */
   text-shadow: 
     0 0 5px rgba(255, 255, 255, 0.7),
     0 0 10px rgba(255, 255, 255, 0.7),
@@ -115,8 +114,8 @@ body::-webkit-scrollbar {
   color: #ccc;
   font-style: italic;
   position: relative;
-  /* Ajustement de l'ombre du sous-titre pour moins de glow */
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); 
+  /* Pas de GLOW pour le sous-titre */
+  text-shadow: none; 
 }
 
 .subtitle::after {
@@ -127,13 +126,24 @@ body::-webkit-scrollbar {
   background: rgba(255,255,255,0.3);
   margin: 6px auto 0;
 }
+
+/* NOUVEAU : Style pour le texte additionnel (le [soon]) */
+.extra-text {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #888;
+  font-style: italic;
+  letter-spacing: 1px;
+  text-shadow: none;
+}
 </style>
 </head>
 <body>
 
 <div id="titleContainer">
-  <div class="title">Akakalixte</div>
-  <div class="subtitle">Phobia est Arma</div>
+  <div class="title">Nerd</div>
+  <div class="subtitle">victoria — intelligenti</div>
+  <div class="extra-text">[soon]</div>
 </div>
 
 <div id="fourContainers">
