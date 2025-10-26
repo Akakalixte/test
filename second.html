@@ -10,14 +10,18 @@
    ---------------------------------------------------------------- */
 html, body {
   /* La hauteur du body détermine la distance de défilement nécessaire */
-  height: 200vh; /* Utilisation de vh pour une hauteur relative à la fenêtre */
+  height: 200vh;
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Times New Roman', serif;
-  overflow-x: hidden;
-  /* Scroll-behavior smooth pour un défilement plus agréable (optionnel) */
-  scroll-behavior: smooth; 
+  scroll-behavior: smooth;
+  
+  /* SUPPRIMER LA SOURIS (curseur) */
+  cursor: none !important; 
+  
+  /* SUPPRIMER LA BARRE DE SCROLL (défilement horizontal et vertical) */
+  overflow: hidden; /* Cache les deux barres de défilement (y et x) */
 }
 
 /* ----------------------------------------------------------------
@@ -27,7 +31,6 @@ html, body {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Transform initial */
   transform: translate(-50%, -50%);
   background: rgba(20, 20, 20, 0.6);
   padding: 40px 60px;
@@ -36,26 +39,30 @@ html, body {
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   text-align: center;
+  /* Transition pour l'effet de fade/mouvement */
   transition: opacity 0.5s ease, transform 0.5s ease;
   z-index: 10;
+  
+  /* EFFET D'APPARITION : Masqué au chargement */
+  opacity: 0;
 }
 
 /* ----------------------------------------------------------------
    Conteneur des 4 GUI (GUI 2)
    ---------------------------------------------------------------- */
 #fourContainers {
-  position: fixed; /* Rendre fixe comme le titre pour une synchronisation facile */
+  position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Centré comme le titre */
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   gap: 40px;
   text-align: center;
-  opacity: 0; /* Caché par défaut */
-  pointer-events: none; /* Empêche les clics sur l'élément caché */
+  opacity: 0; /* Caché par défaut pour le fade */
+  pointer-events: none;
   transition: opacity 0.5s ease;
-  z-index: 5; /* Z-index plus bas que le titre */
+  z-index: 5;
 }
 
 /* Styles pour les petits GUI */
@@ -106,7 +113,6 @@ html, body {
   background: rgba(255,255,255,0.3);
   margin: 6px auto 0;
 }
-
 </style>
 </head>
 <body>
@@ -127,65 +133,43 @@ html, body {
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-// Détermine le point de bascule de l'animation
-// 100vh représente une hauteur de fenêtre complète
-const scrollThreshold = window.innerHeight * 0.5; // Bascule à mi-chemin de la première "page"
+// 1. DÉFINITION DU SEUIL DE SCROLL
+// Nous avons besoin de 200vh de hauteur de page. Le seuil de bascule est à 100vh.
+const scrollThreshold = window.innerHeight; 
 
+// 2. EFFET D'APPARITION DE LA PAGE
+// Fait apparaître le titre au chargement
+window.onload = () => {
+    // Rend le titre visible (initialement opacity: 0 en CSS)
+    titleContainer.style.opacity = '1';
+    // Ajoute un effet de translation (optionnel, pour faire "glisser" le titre)
+    titleContainer.style.transform = 'translate(-50%, -50%)'; 
+};
+
+// 3. EFFET DE FADE LORS DU SCROLL
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
+  
+  // Calcul du facteur de progression du scroll sur la première "page" (0 à 100vh)
+  // Clamp: S'assure que la valeur reste entre 0 et 1
+  const scrollProgress = Math.min(scrollY / scrollThreshold, 1); 
 
-  if (scrollY > scrollThreshold) {
-    // Si l'utilisateur a dépassé le seuil de défilement (vers le bas)
-    
-    // 1. Masquer le titre
-    titleContainer.style.opacity = '0';
-    // Rendre le titre non cliquable une fois invisible
-    titleContainer.style.pointerEvents = 'none'; 
-    
-    // 2. Afficher les GUI
-    fourContainers.style.opacity = '1';
-    // Rendre les GUI cliquables
-    fourContainers.style.pointerEvents = 'auto'; 
+  // TITRE (GUI 1)
+  // Opacité : Diminue de 1 à 0
+  const titleOpacity = 1 - scrollProgress; 
+  titleContainer.style.opacity = titleOpacity;
+  titleContainer.style.pointerEvents = titleOpacity > 0 ? 'auto' : 'none';
+  
+  // Déplacement : Bouge légèrement vers le haut pendant la disparition (optionnel)
+  const titleMoveY = scrollProgress * -50; // Déplace de 0 à -50%
+  titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
 
-  } else {
-    // Si l'utilisateur est au-dessus du seuil de défilement (vers le haut)
 
-    // 1. Afficher le titre
-    titleContainer.style.opacity = '1';
-    titleContainer.style.pointerEvents = 'auto';
-    
-    // 2. Masquer les GUI
-    fourContainers.style.opacity = '0';
-    fourContainers.style.pointerEvents = 'none';
-  }
-
-  // NOTE: On n'a plus besoin de 'lastScrollY' car la logique est basée sur la position absolue 'scrollY' par rapport au 'scrollThreshold', ce qui élimine les bugs de "glitch" et synchronise les GUI.
-});
-</script>
-</body>
-</html><script>
-const titleContainer = document.getElementById('titleContainer');
-const fourContainers = document.getElementById('fourContainers');
-
-let lastScrollY = window.scrollY;
-
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  const threshold = 10; // petit scroll pour déclencher
-
-  if (scrollY > lastScrollY + threshold) {
-    // Scroll vers le bas -> titre disparaît, GUI apparaissent
-    titleContainer.style.transform = `translate(-50%, -150%)`;
-    titleContainer.style.opacity = '0';
-    fourContainers.style.opacity = '1';
-  } else if (scrollY < lastScrollY - threshold) {
-    // Scroll vers le haut -> titre revient, GUI disparaissent
-    titleContainer.style.transform = `translate(-50%, -50%)`;
-    titleContainer.style.opacity = '1';
-    fourContainers.style.opacity = '0';
-  }
-
-  lastScrollY = scrollY;
+  // 4 GUI (GUI 2)
+  // Opacité : Augmente de 0 à 1
+  const guiOpacity = scrollProgress;
+  fourContainers.style.opacity = guiOpacity;
+  fourContainers.style.pointerEvents = guiOpacity > 0 ? 'auto' : 'none';
 });
 </script>
 </body>
