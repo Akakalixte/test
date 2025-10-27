@@ -54,25 +54,41 @@ body::-webkit-scrollbar {
 }
 
 /* ----------------------------------------------------------------
-   KEYFRAMES POUR L'EFFET DE SCINTILLEMENT (FLICKER)
+   KEYFRAMES POUR L'EFFET DE CHUTE DES PÉTALES LUMINEUSES
    ---------------------------------------------------------------- */
-@keyframes flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+@keyframes fall {
+  0% {
+    transform: translate(var(--x-start), -100px) rotateZ(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1; /* Apparaît doucement */
+  }
+  90% {
     opacity: 1;
-    text-shadow: inherit; /* Utilise le glow pulsé */
-    transform: translateX(0);
   }
-  20%, 24%, 55% {
-    opacity: 0.8; 
-    /* Petite déviation de couleur et léger décalage pour le 'glitch' */
-    text-shadow: 0 0 4px #fff, 0 0 10px rgba(255, 0, 0, 0.4); 
-    transform: translateX(1px); 
-  }
-  40% {
-    opacity: 0.95;
+  100% {
+    transform: translate(var(--x-end), 100vh) rotateZ(360deg);
+    opacity: 0; /* Disparaît en bas */
   }
 }
 
+/* ----------------------------------------------------------------
+   Styles des Pétales Lumineuses
+   ---------------------------------------------------------------- */
+.petal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px; /* Taille des pétales */
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%; /* Forme ronde pour un effet "lumière" */
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); /* Effet de glow */
+  pointer-events: none; /* Pour ne pas bloquer les clics sous les pétales */
+  z-index: 9; /* Sous le titre Akakalixte mais au-dessus du fond */
+  animation: fall var(--duration) linear infinite; /* Animation de chute */
+}
 
 /* ----------------------------------------------------------------
    Conteneur du Titre Principal (GRAND CARRÉ CENTRAL)
@@ -143,22 +159,19 @@ body::-webkit-scrollbar {
   color: #fff;
   font-weight: 700;
   margin-bottom: 12px;
-  /* Retrait du GLOW statique pour ne pas interférer avec l'animation */
-  text-shadow: none; 
+  text-shadow: none; /* Retrait du glow statique, sera animé */
 }
 
-/* CLASSE PRINCIPALE AVEC DOUBLE ANIMATION */
+/* CLASSE PRINCIPALE AVEC GLOW PULSANT (RESTAURÉ) */
 .animated-glow {
-    /* GLOW de base (pour le rendre visible avant le début de l'anim) */
+    /* GLOW de base initial */
     text-shadow: 
       0 0 5px rgba(255, 255, 255, 0.7),
       0 0 15px #fff,
       0 0 30px #fff; 
       
-    /* 1. Animation de Pulsation (Wave) */
-    animation: pulseGlow 2.5s infinite alternate ease-in-out,
-               /* 2. Animation de Scintillement (Flicker) */
-               flicker 5s infinite; 
+    /* Animation de Pulsation (Wave) */
+    animation: pulseGlow 2.5s infinite alternate ease-in-out; 
 }
 
 
@@ -215,6 +228,38 @@ const fourContainers = document.getElementById('fourContainers');
 const TRANSITION_HEIGHT = window.innerHeight * 0.15; 
 const scrollStartThreshold = 0; 
 const scrollEndThreshold = TRANSITION_HEIGHT; 
+
+// SCRIPT POUR LES PÉTALES LUMINEUSES
+const NUM_PETALS = 30; // Nombre de pétales visibles simultanément
+const PETAL_COLORS = ['#ffffff', '#f0f0f0', '#e0e0e0']; // Nuances de blanc
+const MIN_DURATION = 10; // Durée min de chute (secondes)
+const MAX_DURATION = 20; // Durée max de chute (secondes)
+
+function createPetal() {
+    const petal = document.createElement('div');
+    petal.classList.add('petal');
+    document.body.appendChild(petal);
+
+    const xStart = Math.random() * window.innerWidth;
+    const xEnd = xStart + (Math.random() - 0.5) * 200; // Léger mouvement latéral
+    const duration = Math.random() * (MAX_DURATION - MIN_DURATION) + MIN_DURATION;
+
+    petal.style.setProperty('--x-start', `${xStart}px`);
+    petal.style.setProperty('--x-end', `${xEnd}px`);
+    petal.style.setProperty('--duration', `${duration}s`);
+    petal.style.animationDelay = `-${Math.random() * duration}s`; // Pour qu'ils ne tombent pas tous en même temps
+
+    petal.addEventListener('animationend', () => {
+        petal.remove(); // Supprime la pétale une fois l'animation terminée
+        createPetal(); // Crée une nouvelle pétale
+    });
+}
+
+// Générer les pétales initiales
+for (let i = 0; i < NUM_PETALS; i++) {
+    createPetal();
+}
+
 
 // EFFET D'APPARITION DE LA PAGE
 window.onload = () => {
