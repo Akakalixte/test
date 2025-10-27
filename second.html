@@ -103,6 +103,7 @@ body::-webkit-scrollbar {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  /* BACKDROP FILTER DEJA EXISTANT */
   backdrop-filter: blur(6px);
   text-align: center;
   transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -128,14 +129,17 @@ body::-webkit-scrollbar {
   z-index: 5;
 }
 
-/* Styles pour les petits GUI (inchangés) */
+/* Styles pour les petits GUI */
 .smallGui {
   background: rgba(20,20,20,0.6);
   padding: 30px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  
+  /* NOUVEAU: Ajout du filtre de flou sur l'arrière-plan */
   backdrop-filter: blur(6px);
+
   color: #fff;
   font-size: 24px;
   min-width: 200px;
@@ -159,7 +163,7 @@ body::-webkit-scrollbar {
   color: #fff;
   font-weight: 700;
   margin-bottom: 12px;
-  text-shadow: none; /* Retrait du glow statique, sera animé */
+  text-shadow: none; 
 }
 
 /* CLASSE PRINCIPALE AVEC GLOW PULSANT (RESTAURÉ) */
@@ -231,7 +235,6 @@ const scrollEndThreshold = TRANSITION_HEIGHT;
 
 // SCRIPT POUR LES PÉTALES LUMINEUSES
 const NUM_PETALS = 30; // Nombre de pétales visibles simultanément
-const PETAL_COLORS = ['#ffffff', '#f0f0f0', '#e0e0e0']; // Nuances de blanc
 const MIN_DURATION = 10; // Durée min de chute (secondes)
 const MAX_DURATION = 20; // Durée max de chute (secondes)
 
