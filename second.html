@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Akakalixte — Phobia est Arma</title>
 <style>
-/* ----------------------------------------------------------------
-   Styles Généraux & Structure
-   ---------------------------------------------------------------- */
+/* ================================================================
+   STYLES GÉNÉRAUX
+   ================================================================ */
 html {
   overflow-x: hidden; 
   scroll-behavior: smooth;
@@ -15,36 +15,31 @@ html {
 }
 
 body {
-  height: 200vh;
+  min-height: 300vh; /* Plus d'espace pour un scroll fluide */
   margin: 0;
   background: #000;
   color: #fff;
-  /* Police d'écriture ancienne/stylisée */
   font-family: 'Georgia', serif; 
-  
   overflow-y: scroll; 
   cursor: none !important; 
   -ms-overflow-style: none;  
 }
 
-/* Pour Chrome, Safari, Edge (WebKit) masquer la barre de défilement */
 body::-webkit-scrollbar {
-    display: none; 
+  display: none; 
 }
 
-/* ----------------------------------------------------------------
-   KEYFRAMES POUR L'EFFET DE GLOW ANIMÉ (PULSATION)
-   ---------------------------------------------------------------- */
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
 @keyframes pulseGlow {
   0%, 100% {
-    /* Lueur de base */
     text-shadow: 
       0 0 5px rgba(255, 255, 255, 0.7),
       0 0 15px #fff,
       0 0 30px #fff;
   }
   50% {
-    /* Lueur maximale */
     text-shadow: 
       0 0 10px rgba(255, 255, 255, 1),
       0 0 20px #fff,
@@ -53,29 +48,26 @@ body::-webkit-scrollbar {
   }
 }
 
-/* ----------------------------------------------------------------
-   KEYFRAMES POUR L'EFFET DE CHUTE DES PÉTALES LUMINEUSES
-   ---------------------------------------------------------------- */
 @keyframes fall {
   0% {
     transform: translate(var(--x-start), -100px) rotateZ(0deg);
     opacity: 0;
   }
   10% {
-    opacity: 1; /* Apparaît doucement */
+    opacity: 1;
   }
   90% {
     opacity: 1;
   }
   100% {
     transform: translate(var(--x-end), 100vh) rotateZ(360deg);
-    opacity: 0; /* Disparaît en bas */
+    opacity: 0;
   }
 }
 
-/* ----------------------------------------------------------------
-   Styles des Pétales Lumineuses
-   ---------------------------------------------------------------- */
+/* ================================================================
+   PÉTALES LUMINEUSES
+   ================================================================ */
 .petal {
   position: fixed;
   top: 0;
@@ -86,13 +78,13 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); 
   pointer-events: none;
-  z-index: 9; /* Assure que les pétales sont DERRIÈRE les GUIs (z-index: 10) */
+  z-index: 1; /* Derrière tout */
   animation: fall var(--duration) linear infinite;
 }
 
-/* ----------------------------------------------------------------
-   Conteneur du Titre Principal (GRAND CARRÉ CENTRAL)
-   ---------------------------------------------------------------- */
+/* ================================================================
+   TITRE PRINCIPAL (GRAND CARRÉ)
+   ================================================================ */
 #titleContainer {
   position: fixed;
   top: 50%;
@@ -103,90 +95,89 @@ body::-webkit-scrollbar {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   text-align: center;
-  transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: 10;
+  transition: opacity 0.3s ease-out, transform 0.6s ease-out;
+  z-index: 100;
   opacity: 0;
+  will-change: transform, opacity;
 }
 
-/* ----------------------------------------------------------------
-   Conteneur des 4 GUI 
-   ---------------------------------------------------------------- */
+/* ================================================================
+   CONTENEUR DES 4 GUI
+   ================================================================ */
 #fourContainers {
   position: fixed;
   top: 50%;
   left: 50%;
-  /* Le transform du conteneur parent ne doit pas bloquer le backdrop-filter des enfants */
-  transform: translate(-50%, 150%);
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  text-align: center;
+  transform: translate(-50%, -50%);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
   opacity: 0; 
   pointer-events: none;
-  transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
-  z-index: 5; /* Ceci est le Z-index du CONTENEUR parent des 4 GUIs */
+  transition: opacity 0.3s ease-out;
+  z-index: 100;
+  will-change: opacity;
 }
 
-/* Styles pour les petits GUI individuels */
+/* Styles individuels des GUI */
 .smallGui {
-  /* Arrière-plan plus transparent pour mieux voir le flou */
-  background: rgba(20,20,20,0.3); /* Légèrement plus transparent */
-  padding: 30px 50px;
+  background: rgba(20, 20, 20, 0.5);
+  padding: 40px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  
-  /* FLOU DES PÉTALES AMÉLIORÉ */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  
-  /* FORCER UN NOUVEAU CONTEXTE D'EMPILEMENT ET D'ACCÉLÉRATION GPU */
-  will-change: transform, opacity, backdrop-filter; /* Prépare le navigateur aux changements */
-  transform: translateZ(0);     /* Astuce pour forcer un nouveau contexte d'empilement */
-  z-index: 10;                  /* Ceci est le Z-index des GUIs INDIVIDUELS. Ils doivent être au-dessus des pétales (z-index: 9) pour être floutés. */
-
-
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #fff;
-  font-size: 24px;
-  min-width: 200px;
+  text-align: center;
+  min-width: 250px;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  content: none;
+  z-index: 100;
+  will-change: transform;
+  transform: translateZ(0);
 }
-.smallGui:not(:first-child) { content: ""; }
-.smallGui:nth-child(2)::after { content: "GUI 2"; }
-.smallGui:nth-child(3)::after { content: "GUI 3"; }
-.smallGui:nth-child(4)::after { content: "GUI 4"; }
 
-/* ----------------------------------------------------------------
-   Styles Génériques pour le contenu
-   ---------------------------------------------------------------- */
+/* ================================================================
+   CONTENU DES GUI
+   ================================================================ */
 .gui-title {
   font-size: 48px;
   letter-spacing: 4px;
   color: #fff;
   font-weight: 700;
   margin-bottom: 12px;
-  text-shadow: none; 
 }
 
-/* CLASSE PRINCIPALE AVEC GLOW PULSANT */
+.gui-title-small {
+  font-size: 36px;
+  letter-spacing: 3px;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
 .animated-glow {
-    /* GLOW de base initial */
-    text-shadow: 
-      0 0 5px rgba(255, 255, 255, 0.7),
-      0 0 15px #fff,
-      0 0 30px #fff; 
-      
-    /* Animation de Pulsation (Wave) */
-    animation: pulseGlow 2.5s infinite alternate ease-in-out; 
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 15px #fff,
+    0 0 30px #fff; 
+  animation: pulseGlow 2.5s infinite alternate ease-in-out; 
 }
 
+.gui-glow {
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 10px rgba(255, 255, 255, 0.7),
+    0 0 20px #fff,
+    0 0 40px #fff;
+}
 
 .gui-subtitle {
   font-size: 18px;
@@ -194,7 +185,7 @@ body::-webkit-scrollbar {
   color: #ccc;
   font-style: italic;
   position: relative;
-  text-shadow: none; 
+  margin-bottom: 15px;
 }
 
 .gui-subtitle::after {
@@ -203,108 +194,144 @@ body::-webkit-scrollbar {
   width: 140px;
   height: 1px;
   background: rgba(255,255,255,0.3);
-  margin: 6px auto 0;
+  margin: 8px auto 0;
 }
 
 .gui-extra-text {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 16px;
   color: #888;
   font-style: italic;
   letter-spacing: 1px;
-  text-shadow: none;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  #fourContainers {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .smallGui {
+    min-width: 200px;
+    padding: 30px 40px;
+  }
+  
+  .gui-title {
+    font-size: 36px;
+  }
+  
+  .gui-title-small {
+    font-size: 28px;
+  }
 }
 </style>
 </head>
 <body>
 
+<!-- TITRE PRINCIPAL -->
 <div id="titleContainer">
   <div class="gui-title animated-glow">Akakalixte</div> 
   <div class="gui-subtitle">Phobia est Arma</div>
 </div>
 
+<!-- 4 GUI EN GRILLE 2x2 -->
 <div id="fourContainers">
   <div class="smallGui">
-    <div class="gui-title" style="text-shadow: 0 0 5px rgba(255, 255, 255, 0.7), 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px #fff, 0 0 40px #fff;">Nerd</div>
+    <div class="gui-title-small gui-glow">Nerd</div>
     <div class="gui-subtitle">victoria — intelligenti</div>
     <div class="gui-extra-text">[soon]</div>
   </div>
-  <div class="smallGui"></div>
-  <div class="smallGui"></div>
-  <div class="smallGui"></div>
+  
+  <div class="smallGui">
+    <div class="gui-title-small gui-glow">Créativité</div>
+    <div class="gui-subtitle">ars longa, vita brevis</div>
+    <div class="gui-extra-text">[soon]</div>
+  </div>
+  
+  <div class="smallGui">
+    <div class="gui-title-small gui-glow">Passion</div>
+    <div class="gui-subtitle">cor cordis mei</div>
+    <div class="gui-extra-text">[soon]</div>
+  </div>
+  
+  <div class="smallGui">
+    <div class="gui-title-small gui-glow">Contact</div>
+    <div class="gui-subtitle">nexus inter nos</div>
+    <div class="gui-extra-text">[soon]</div>
+  </div>
 </div>
 
 <script>
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-const TRANSITION_HEIGHT = window.innerHeight * 0.15; 
-const scrollStartThreshold = 0; 
-const scrollEndThreshold = TRANSITION_HEIGHT; 
+// Configuration du scroll - transition plus longue et fluide
+const SCROLL_START = 0;
+const SCROLL_END = window.innerHeight * 1.2; // Transition sur 120% de la hauteur d'écran
 
-// SCRIPT POUR LES PÉTALES LUMINEUSES
-const NUM_PETALS = 30; // Nombre de pétales visibles simultanément
-const MIN_DURATION = 10; // Durée min de chute (secondes)
-const MAX_DURATION = 20; // Durée max de chute (secondes)
+// ================================================================
+// PÉTALES LUMINEUSES
+// ================================================================
+const NUM_PETALS = 30;
+const MIN_DURATION = 10;
+const MAX_DURATION = 20;
 
 function createPetal() {
-    const petal = document.createElement('div');
-    petal.classList.add('petal');
-    document.body.appendChild(petal);
+  const petal = document.createElement('div');
+  petal.classList.add('petal');
+  document.body.appendChild(petal);
 
-    const xStart = Math.random() * window.innerWidth;
-    const xEnd = xStart + (Math.random() - 0.5) * 200; // Léger mouvement latéral
-    const duration = Math.random() * (MAX_DURATION - MIN_DURATION) + MIN_DURATION;
+  const xStart = Math.random() * window.innerWidth;
+  const xEnd = xStart + (Math.random() - 0.5) * 200;
+  const duration = Math.random() * (MAX_DURATION - MIN_DURATION) + MIN_DURATION;
 
-    petal.style.setProperty('--x-start', `${xStart}px`);
-    petal.style.setProperty('--x-end', `${xEnd}px`);
-    petal.style.setProperty('--duration', `${duration}s`);
-    petal.style.animationDelay = `-${Math.random() * duration}s`; // Pour qu'ils ne tombent pas tous en même temps
+  petal.style.setProperty('--x-start', `${xStart}px`);
+  petal.style.setProperty('--x-end', `${xEnd}px`);
+  petal.style.setProperty('--duration', `${duration}s`);
+  petal.style.animationDelay = `-${Math.random() * duration}s`;
 
-    petal.addEventListener('animationend', () => {
-        petal.remove(); // Supprime la pétale une fois l'animation terminée
-        createPetal(); // Crée une nouvelle pétale
-    });
-}
-
-// Générer les pétales initiales
-for (let i = 0; i < NUM_PETALS; i++) {
+  petal.addEventListener('animationend', () => {
+    petal.remove();
     createPetal();
+  });
 }
 
+for (let i = 0; i < NUM_PETALS; i++) {
+  createPetal();
+}
 
-// EFFET D'APPARITION DE LA PAGE
+// ================================================================
+// APPARITION INITIALE
+// ================================================================
 window.onload = () => {
-    titleContainer.style.transform = 'translate(-50%, -150%)';
-    setTimeout(() => {
-        titleContainer.style.opacity = '1';
-        titleContainer.style.transform = 'translate(-50%, -50%)'; 
-    }, 50); 
+  titleContainer.style.transform = 'translate(-50%, -150%)';
+  setTimeout(() => {
+    titleContainer.style.opacity = '1';
+    titleContainer.style.transform = 'translate(-50%, -50%)'; 
+  }, 50); 
 };
 
-// EFFET DE GLISSEMENT ET DE FADE LORS DU SCROLL
+// ================================================================
+// GESTION DU SCROLL
+// ================================================================
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   
-  const scrollProgressRaw = (scrollY - scrollStartThreshold) / (scrollEndThreshold - scrollStartThreshold);
-  const scrollProgress = Math.min(Math.max(scrollProgressRaw, 0), 1); 
+  // Calcul de la progression du scroll (0 à 1)
+  const scrollProgress = Math.min(Math.max((scrollY - SCROLL_START) / (SCROLL_END - SCROLL_START), 0), 1);
 
-  // TITRE ORIGINAL (GRAND CARRÉ) - Glisse vers le HAUT (hors champ) et disparaît.
-  
-  titleContainer.style.opacity = 1 - scrollProgress; 
+  // TITRE - disparaît en glissant vers le haut
+  titleContainer.style.opacity = 1 - scrollProgress;
   titleContainer.style.pointerEvents = scrollProgress < 0.95 ? 'auto' : 'none';
-  
-  const titleMoveY = scrollProgress * -100;
+  const titleMoveY = scrollProgress * -150;
   titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
 
-
-  // 4 GUI (Y compris le GUI 1 modifié) - Glissent vers le BAS (au centre) et apparaissent.
-  
+  // 4 GUI - apparaissent en fondu (sans mouvement pour éviter les bugs)
   fourContainers.style.opacity = scrollProgress;
   fourContainers.style.pointerEvents = scrollProgress > 0.05 ? 'auto' : 'none';
-
-  const guiMoveY = (1 - scrollProgress) * 200; 
-  fourContainers.style.transform = `translate(-50%, ${-50 + guiMoveY}%)`;
 });
 </script>
 </body>
