@@ -60,7 +60,6 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
 }
 
-/* Curseur agrandi au survol d'éléments interactifs */
 #customCursor.hover {
   transform: scale(1.8);
   border-color: rgba(255, 255, 255, 1);
@@ -174,7 +173,6 @@ body::-webkit-scrollbar {
   will-change: opacity;
 }
 
-/* Styles individuels des GUI */
 .smallGui {
   background: rgba(20, 20, 20, 0.6);
   backdrop-filter: blur(6px);
@@ -195,33 +193,20 @@ body::-webkit-scrollbar {
   z-index: 100;
   will-change: transform;
   transform: translateZ(0);
-  
-  /* Transitions pour les effets hover */
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* EFFETS HOVER SUR LES GUI */
 .smallGui:hover {
-  /* Agrandissement léger */
   transform: translateZ(0) scale(1.08);
-  
-  /* Bordure plus lumineuse */
   border-color: rgba(255, 255, 255, 0.4);
-  
-  /* Ombre plus intense */
   box-shadow: 
     0 0 50px rgba(255, 255, 255, 0.15),
     0 0 100px rgba(255, 255, 255, 0.08);
-  
-  /* Flou d'arrière-plan intensifié */
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  
-  /* Arrière-plan légèrement plus opaque */
   background: rgba(20, 20, 20, 0.75);
 }
 
-/* Animation de pulsation au survol */
 .smallGui:hover .gui-title-small {
   animation: hoverPulse 1.5s ease-in-out infinite;
 }
@@ -316,37 +301,110 @@ body::-webkit-scrollbar {
 }
 
 /* ================================================================
-   RESPONSIVE
+   RESPONSIVE MOBILE (max-width: 768px)
    ================================================================ */
 @media (max-width: 768px) {
-  #fourContainers {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  /* Curseur désactivé sur mobile */
+  body {
+    cursor: auto !important;
   }
   
-  .smallGui {
-    min-width: 200px;
+  #customCursor {
+    display: none;
+  }
+  
+  /* Titre adapté pour mobile */
+  #titleContainer {
     padding: 30px 40px;
+    max-width: 85%;
   }
   
   .gui-title {
-    font-size: 36px;
+    font-size: 32px;
+    letter-spacing: 2px;
+  }
+  
+  .gui-subtitle {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  
+  /* 4 GUI en colonne verticale */
+  #fourContainers {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 85%;
+    overflow-y: auto;
+    max-height: 80vh;
+    padding: 20px 0;
+  }
+  
+  .smallGui {
+    min-width: auto;
+    width: 100%;
+    padding: 25px 35px;
+    min-height: 140px;
   }
   
   .gui-title-small {
+    font-size: 26px;
+    letter-spacing: 2px;
+  }
+  
+  .gui-subtitle {
+    font-size: 14px;
+  }
+  
+  .gui-extra-text {
+    font-size: 13px;
+  }
+  
+  /* Effets hover simplifiés pour tactile */
+  .smallGui:hover {
+    transform: translateZ(0) scale(1.02);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .smallGui:hover .gui-title-small {
+    animation: none;
+  }
+  
+  /* Pétales réduites sur mobile (performances) */
+  .petal {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Pour très petits écrans (smartphones en portrait) */
+@media (max-width: 480px) {
+  #titleContainer {
+    padding: 25px 30px;
+  }
+  
+  .gui-title {
     font-size: 28px;
   }
   
-  /* Pas d'effets hover complexes sur mobile */
-  .smallGui:hover {
-    transform: translateZ(0) scale(1.02);
+  .gui-title-small {
+    font-size: 22px;
+  }
+  
+  .smallGui {
+    padding: 20px 25px;
+    min-height: 120px;
+  }
+  
+  .gui-subtitle::after {
+    width: 100px;
   }
 }
 </style>
 </head>
 <body>
 
-<!-- CURSEUR PERSONNALISÉ -->
+<!-- CURSEUR PERSONNALISÉ (PC uniquement) -->
 <div id="customCursor"></div>
 
 <!-- TITRE PRINCIPAL -->
@@ -355,7 +413,7 @@ body::-webkit-scrollbar {
   <div class="gui-subtitle">Phobia est Arma</div>
 </div>
 
-<!-- 4 GUI EN GRILLE 2x2 -->
+<!-- 4 GUI EN GRILLE 2x2 (PC) / COLONNE (MOBILE) -->
 <div id="fourContainers">
   <div class="smallGui">
     <div class="gui-title-small gui-glow">Nerd</div>
@@ -390,49 +448,52 @@ const customCursor = document.getElementById('customCursor');
 let currentView = 'title';
 let isTransitioning = false;
 
-// ================================================================
-// CURSEUR PERSONNALISÉ
-// ================================================================
-let mouseX = 0;
-let mouseY = 0;
-let cursorX = 0;
-let cursorY = 0;
+// Détection mobile
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
+// ================================================================
+// CURSEUR PERSONNALISÉ (PC UNIQUEMENT)
+// ================================================================
+if (!isMobile) {
+  let mouseX = 0;
+  let mouseY = 0;
+  let cursorX = 0;
+  let cursorY = 0;
 
-// Animation fluide du curseur avec légère traînée
-function animateCursor() {
-  const dx = mouseX - cursorX;
-  const dy = mouseY - cursorY;
-  
-  cursorX += dx * 0.15; // Facteur de lissage (0.1 = très lent, 1 = instantané)
-  cursorY += dy * 0.15;
-  
-  customCursor.style.left = cursorX - 10 + 'px';
-  customCursor.style.top = cursorY - 10 + 'px';
-  
-  requestAnimationFrame(animateCursor);
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animateCursor() {
+    const dx = mouseX - cursorX;
+    const dy = mouseY - cursorY;
+    
+    cursorX += dx * 0.15;
+    cursorY += dy * 0.15;
+    
+    customCursor.style.left = cursorX - 10 + 'px';
+    customCursor.style.top = cursorY - 10 + 'px';
+    
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  const interactiveElements = document.querySelectorAll('.smallGui');
+  interactiveElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      customCursor.classList.add('hover');
+    });
+    el.addEventListener('mouseleave', () => {
+      customCursor.classList.remove('hover');
+    });
+  });
 }
-animateCursor();
-
-// Détection du survol des GUI pour agrandir le curseur
-const interactiveElements = document.querySelectorAll('.smallGui');
-interactiveElements.forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    customCursor.classList.add('hover');
-  });
-  el.addEventListener('mouseleave', () => {
-    customCursor.classList.remove('hover');
-  });
-});
 
 // ================================================================
 // PÉTALES LUMINEUSES
 // ================================================================
-const NUM_PETALS = 30;
+const NUM_PETALS = isMobile ? 15 : 30; // Moins de pétales sur mobile
 const MIN_DURATION = 10;
 const MAX_DURATION = 20;
 
@@ -442,11 +503,12 @@ function createPetal() {
   document.body.appendChild(petal);
 
   const xStart = Math.random() * window.innerWidth;
-  const xEnd = xStart + (Math.random() - 0.5) * 200;
+  const xEnd = xStart + (Math.random() - 0.5) * 400;
   const duration = Math.random() * (MAX_DURATION - MIN_DURATION) + MIN_DURATION;
 
-  petal.style.setProperty('--x-start', `${xStart}px`);
-  petal.style.setProperty('--x-end', `${xEnd}px`);
+  petal.style.left = `${xStart}px`;
+  petal.style.setProperty('--x-start', '0px');
+  petal.style.setProperty('--x-end', `${xEnd - xStart}px`);
   petal.style.setProperty('--duration', `${duration}s`);
   petal.style.animationDelay = `-${Math.random() * duration}s`;
 
@@ -472,7 +534,7 @@ window.onload = () => {
 };
 
 // ================================================================
-// TRANSITION AUTOMATIQUE AVEC UN SEUL COUP DE MOLETTE
+// TRANSITION AUTOMATIQUE
 // ================================================================
 function transitionToGuis() {
   if (isTransitioning || currentView === 'guis') return;
@@ -510,7 +572,7 @@ function transitionToTitle() {
   }, 800);
 }
 
-// Détection de la molette de souris
+// Détection molette (PC et mobile)
 window.addEventListener('wheel', (e) => {
   if (e.deltaY > 0) {
     transitionToGuis();
