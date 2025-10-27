@@ -86,7 +86,7 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); 
   pointer-events: none;
-  z-index: 9; /* Position pour que les pétales passent sous les GUIs */
+  z-index: 9; /* Assure que les pétales sont DERRIÈRE les GUIs (z-index: 10) */
   animation: fall var(--duration) linear infinite;
 }
 
@@ -103,7 +103,6 @@ body::-webkit-scrollbar {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  /* Filtre de flou pour Akakalixte (vérifié) */
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   text-align: center;
@@ -119,6 +118,7 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 50%;
   left: 50%;
+  /* Le transform du conteneur parent ne doit pas bloquer le backdrop-filter des enfants */
   transform: translate(-50%, 150%);
   display: flex;
   flex-direction: column;
@@ -127,13 +127,13 @@ body::-webkit-scrollbar {
   opacity: 0; 
   pointer-events: none;
   transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
-  z-index: 5;
+  z-index: 5; /* Ceci est le Z-index du CONTENEUR parent des 4 GUIs */
 }
 
-/* Styles pour les petits GUI */
+/* Styles pour les petits GUI individuels */
 .smallGui {
-  /* Arrière-plan moins opaque pour mieux voir le flou */
-  background: rgba(20,20,20,0.4); 
+  /* Arrière-plan plus transparent pour mieux voir le flou */
+  background: rgba(20,20,20,0.3); /* Légèrement plus transparent */
   padding: 30px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
@@ -143,10 +143,10 @@ body::-webkit-scrollbar {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   
-  /* FORCE LE CONTEXTE DE RENDU POUR QUE LE FLOU S'APPLIQUE AVEC L'ANIMATION */
-  will-change: backdrop-filter; /* Indicateur de performance */
-  transform: translateZ(0);     /* Force un nouveau contexte d'empilement */
-  z-index: 10;                  /* Assure qu'ils sont au-dessus des pétales (z-index: 9) */
+  /* FORCER UN NOUVEAU CONTEXTE D'EMPILEMENT ET D'ACCÉLÉRATION GPU */
+  will-change: transform, opacity, backdrop-filter; /* Prépare le navigateur aux changements */
+  transform: translateZ(0);     /* Astuce pour forcer un nouveau contexte d'empilement */
+  z-index: 10;                  /* Ceci est le Z-index des GUIs INDIVIDUELS. Ils doivent être au-dessus des pétales (z-index: 9) pour être floutés. */
 
 
   color: #fff;
