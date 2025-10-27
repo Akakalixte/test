@@ -32,6 +32,26 @@ body::-webkit-scrollbar {
     display: none; 
 }
 
+/* ----------------------------------------------------------------
+   KEYFRAMES POUR L'EFFET DE GLOW ANIMÉ
+   ---------------------------------------------------------------- */
+@keyframes pulseGlow {
+  0%, 100% {
+    /* Lueur de base (légèrement moins intense) */
+    text-shadow: 
+      0 0 5px rgba(255, 255, 255, 0.7),
+      0 0 15px #fff,
+      0 0 30px #fff;
+  }
+  50% {
+    /* Lueur maximale (plus intense) */
+    text-shadow: 
+      0 0 10px rgba(255, 255, 255, 1),
+      0 0 20px #fff,
+      0 0 40px #fff,
+      0 0 60px rgba(255, 255, 255, 0.3); /* Ajout d'une lueur très diffuse */
+  }
+}
 
 /* ----------------------------------------------------------------
    Conteneur du Titre Principal (GRAND CARRÉ CENTRAL)
@@ -71,7 +91,7 @@ body::-webkit-scrollbar {
   z-index: 5;
 }
 
-/* Styles pour les petits GUI */
+/* Styles pour les petits GUI (inchangés) */
 .smallGui {
   background: rgba(20,20,20,0.6);
   padding: 30px 50px;
@@ -82,19 +102,13 @@ body::-webkit-scrollbar {
   color: #fff;
   font-size: 24px;
   min-width: 200px;
-  /* Centrer le contenu (utile pour le nouveau texte) */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* Supprimer le contenu généré précédemment */
   content: none;
 }
-
-/* Styles pour les GUIs 2, 3, 4 (remettent les labels par défaut) */
-.smallGui:not(:first-child) {
-    content: "";
-}
+.smallGui:not(:first-child) { content: ""; }
 .smallGui:nth-child(2)::after { content: "GUI 2"; }
 .smallGui:nth-child(3)::after { content: "GUI 3"; }
 .smallGui:nth-child(4)::after { content: "GUI 4"; }
@@ -108,13 +122,22 @@ body::-webkit-scrollbar {
   color: #fff;
   font-weight: 700;
   margin-bottom: 12px;
-  /* EFFET DE GLOW (Pour le nouveau titre "Nerd") */
-  text-shadow: 
-    0 0 5px rgba(255, 255, 255, 0.7),
-    0 0 10px rgba(255, 255, 255, 0.7),
-    0 0 20px #fff,
-    0 0 40px #fff;
+  /* Retrait du GLOW statique pour ne pas interférer avec l'animation */
+  text-shadow: none; 
 }
+
+/* NOUVEAU: Classe pour appliquer l'animation de glow (utilisée sur Akakalixte) */
+.animated-glow {
+    /* GLOW de base (pour le rendre visible avant le début de l'anim) */
+    text-shadow: 
+      0 0 5px rgba(255, 255, 255, 0.7),
+      0 0 15px #fff,
+      0 0 30px #fff; 
+      
+    /* L'ANIMATION ! */
+    animation: pulseGlow 2.5s infinite alternate ease-in-out; 
+}
+
 
 .gui-subtitle {
   font-size: 18px;
@@ -147,13 +170,13 @@ body::-webkit-scrollbar {
 <body>
 
 <div id="titleContainer">
-  <div class="gui-title">Akakalixte</div>
+  <div class="gui-title animated-glow">Akakalixte</div> 
   <div class="gui-subtitle">Phobia est Arma</div>
 </div>
 
 <div id="fourContainers">
   <div class="smallGui">
-    <div class="gui-title">Nerd</div>
+    <div class="gui-title" style="text-shadow: 0 0 5px rgba(255, 255, 255, 0.7), 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px #fff, 0 0 40px #fff;">Nerd</div>
     <div class="gui-subtitle">victoria — intelligenti</div>
     <div class="gui-extra-text">[soon]</div>
   </div>
