@@ -33,25 +33,46 @@ body::-webkit-scrollbar {
 }
 
 /* ----------------------------------------------------------------
-   KEYFRAMES POUR L'EFFET DE GLOW ANIMÉ
+   KEYFRAMES POUR L'EFFET DE GLOW ANIMÉ (PULSATION)
    ---------------------------------------------------------------- */
 @keyframes pulseGlow {
   0%, 100% {
-    /* Lueur de base (légèrement moins intense) */
+    /* Lueur de base */
     text-shadow: 
       0 0 5px rgba(255, 255, 255, 0.7),
       0 0 15px #fff,
       0 0 30px #fff;
   }
   50% {
-    /* Lueur maximale (plus intense) */
+    /* Lueur maximale */
     text-shadow: 
       0 0 10px rgba(255, 255, 255, 1),
       0 0 20px #fff,
       0 0 40px #fff,
-      0 0 60px rgba(255, 255, 255, 0.3); /* Ajout d'une lueur très diffuse */
+      0 0 60px rgba(255, 255, 255, 0.3);
   }
 }
+
+/* ----------------------------------------------------------------
+   KEYFRAMES POUR L'EFFET DE SCINTILLEMENT (FLICKER)
+   ---------------------------------------------------------------- */
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: inherit; /* Utilise le glow pulsé */
+    transform: translateX(0);
+  }
+  20%, 24%, 55% {
+    opacity: 0.8; 
+    /* Petite déviation de couleur et léger décalage pour le 'glitch' */
+    text-shadow: 0 0 4px #fff, 0 0 10px rgba(255, 0, 0, 0.4); 
+    transform: translateX(1px); 
+  }
+  40% {
+    opacity: 0.95;
+  }
+}
+
 
 /* ----------------------------------------------------------------
    Conteneur du Titre Principal (GRAND CARRÉ CENTRAL)
@@ -126,7 +147,7 @@ body::-webkit-scrollbar {
   text-shadow: none; 
 }
 
-/* NOUVEAU: Classe pour appliquer l'animation de glow (utilisée sur Akakalixte) */
+/* CLASSE PRINCIPALE AVEC DOUBLE ANIMATION */
 .animated-glow {
     /* GLOW de base (pour le rendre visible avant le début de l'anim) */
     text-shadow: 
@@ -134,8 +155,10 @@ body::-webkit-scrollbar {
       0 0 15px #fff,
       0 0 30px #fff; 
       
-    /* L'ANIMATION ! */
-    animation: pulseGlow 2.5s infinite alternate ease-in-out; 
+    /* 1. Animation de Pulsation (Wave) */
+    animation: pulseGlow 2.5s infinite alternate ease-in-out,
+               /* 2. Animation de Scintillement (Flicker) */
+               flicker 5s infinite; 
 }
 
 
