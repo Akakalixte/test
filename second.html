@@ -18,9 +18,29 @@ body {
   min-height: 300vh; /* Plus d'espace pour un scroll fluide */
   margin: 0;
   background: #000;
+  color: #fff;<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Akakalixte — Phobia est Arma</title>
+<style>
+/* ================================================================
+   STYLES GÉNÉRAUX
+   ================================================================ */
+html {
+  overflow-x: hidden; 
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+body {
+  height: 100vh; /* Plus besoin de scroll manuel */
+  margin: 0;
+  background: #000;
   color: #fff;
   font-family: 'Georgia', serif; 
-  overflow-y: scroll; 
+  overflow: hidden; /* Pas de scroll visible */
   cursor: none !important; 
   -ms-overflow-style: none;  
 }
@@ -78,7 +98,7 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); 
   pointer-events: none;
-  z-index: 1; /* Derrière tout */
+  z-index: 1;
   animation: fall var(--duration) linear infinite;
 }
 
@@ -90,15 +110,18 @@ body::-webkit-scrollbar {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  
+  /* ARRIÈRE-PLAN UNIFORME - identique aux GUI */
   background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  
   padding: 40px 60px;
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   text-align: center;
-  transition: opacity 0.3s ease-out, transform 0.6s ease-out;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   z-index: 100;
   opacity: 0;
   will-change: transform, opacity;
@@ -117,20 +140,22 @@ body::-webkit-scrollbar {
   gap: 30px;
   opacity: 0; 
   pointer-events: none;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.8s ease-out;
   z-index: 100;
   will-change: opacity;
 }
 
-/* Styles individuels des GUI */
+/* Styles individuels des GUI - ARRIÈRE-PLAN IDENTIQUE AU TITRE */
 .smallGui {
-  background: rgba(20, 20, 20, 0.5);
+  /* EXACTEMENT LE MÊME STYLE QUE LE TITRE */
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  
   padding: 40px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   color: #fff;
   text-align: center;
   min-width: 250px;
@@ -268,9 +293,8 @@ body::-webkit-scrollbar {
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
 
-// Configuration du scroll - transition plus longue et fluide
-const SCROLL_START = 0;
-const SCROLL_END = window.innerHeight * 1.2; // Transition sur 120% de la hauteur d'écran
+let currentView = 'title'; // 'title' ou 'guis'
+let isTransitioning = false; // Empêche les transitions multiples
 
 // ================================================================
 // PÉTALES LUMINEUSES
@@ -304,7 +328,7 @@ for (let i = 0; i < NUM_PETALS; i++) {
 }
 
 // ================================================================
-// APPARITION INITIALE
+// APPARITION INITIALE DU TITRE
 // ================================================================
 window.onload = () => {
   titleContainer.style.transform = 'translate(-50%, -150%)';
@@ -315,24 +339,78 @@ window.onload = () => {
 };
 
 // ================================================================
-// GESTION DU SCROLL
+// TRANSITION AUTOMATIQUE AVEC UN SEUL COUP DE MOLETTE
 // ================================================================
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
+function transitionToGuis() {
+  if (isTransitioning || currentView === 'guis') return;
   
-  // Calcul de la progression du scroll (0 à 1)
-  const scrollProgress = Math.min(Math.max((scrollY - SCROLL_START) / (SCROLL_END - SCROLL_START), 0), 1);
+  isTransitioning = true;
+  currentView = 'guis';
+  
+  // Cache le titre
+  titleContainer.style.opacity = '0';
+  titleContainer.style.transform = 'translate(-50%, -150%)';
+  titleContainer.style.pointerEvents = 'none';
+  
+  // Affiche les GUI
+  fourContainers.style.opacity = '1';
+  fourContainers.style.pointerEvents = 'auto';
+  
+  setTimeout(() => {
+    isTransitioning = false;
+  }, 800); // Durée de la transition
+}
 
-  // TITRE - disparaît en glissant vers le haut
-  titleContainer.style.opacity = 1 - scrollProgress;
-  titleContainer.style.pointerEvents = scrollProgress < 0.95 ? 'auto' : 'none';
-  const titleMoveY = scrollProgress * -150;
-  titleContainer.style.transform = `translate(-50%, ${-50 + titleMoveY}%)`;
+function transitionToTitle() {
+  if (isTransitioning || currentView === 'title') return;
+  
+  isTransitioning = true;
+  currentView = 'title';
+  
+  // Cache les GUI
+  fourContainers.style.opacity = '0';
+  fourContainers.style.pointerEvents = 'none';
+  
+  // Affiche le titre
+  titleContainer.style.opacity = '1';
+  titleContainer.style.transform = 'translate(-50%, -50%)';
+  titleContainer.style.pointerEvents = 'auto';
+  
+  setTimeout(() => {
+    isTransitioning = false;
+  }, 800);
+}
 
-  // 4 GUI - apparaissent en fondu (sans mouvement pour éviter les bugs)
-  fourContainers.style.opacity = scrollProgress;
-  fourContainers.style.pointerEvents = scrollProgress > 0.05 ? 'auto' : 'none';
-});
+// Détection de la molette de souris
+window.addEventListener('wheel', (e) => {
+  if (e.deltaY > 0) {
+    // Scroll vers le bas → affiche les GUI
+    transitionToGuis();
+  } else if (e.deltaY < 0) {
+    // Scroll vers le haut → retour au titre
+    transitionToTitle();
+  }
+}, { passive: true });
+
+// Support tactile pour mobile
+let touchStartY = 0;
+window.addEventListener('touchstart', (e) => {
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  const touchEndY = e.touches[0].clientY;
+  const diff = touchStartY - touchEndY;
+  
+  if (Math.abs(diff) > 50) { // Seuil minimum de mouvement
+    if (diff > 0) {
+      transitionToGuis();
+    } else {
+      transitionToTitle();
+    }
+    touchStartY = touchEndY;
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
