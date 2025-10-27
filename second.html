@@ -15,18 +15,59 @@ html {
 }
 
 body {
-  height: 100vh; /* Plus besoin de scroll manuel */
+  height: 100vh;
   margin: 0;
   background: #000;
   color: #fff;
   font-family: 'Georgia', serif; 
-  overflow: hidden; /* Pas de scroll visible */
+  overflow: hidden;
   cursor: none !important; 
   -ms-overflow-style: none;  
 }
 
 body::-webkit-scrollbar {
   display: none; 
+}
+
+/* ================================================================
+   CURSEUR PERSONNALISÉ
+   ================================================================ */
+#customCursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease, border-color 0.3s ease;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(255, 255, 255, 0.3),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+#customCursor::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+/* Curseur agrandi au survol d'éléments interactifs */
+#customCursor.hover {
+  transform: scale(1.8);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.8),
+    0 0 40px rgba(255, 255, 255, 0.5),
+    inset 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
 /* ================================================================
@@ -65,6 +106,15 @@ body::-webkit-scrollbar {
   }
 }
 
+@keyframes hoverPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
 /* ================================================================
    PÉTALES LUMINEUSES
    ================================================================ */
@@ -91,7 +141,6 @@ body::-webkit-scrollbar {
   left: 50%;
   transform: translate(-50%, -50%);
   
-  /* ARRIÈRE-PLAN UNIFORME - identique aux GUI */
   background: rgba(20, 20, 20, 0.6);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -125,9 +174,8 @@ body::-webkit-scrollbar {
   will-change: opacity;
 }
 
-/* Styles individuels des GUI - ARRIÈRE-PLAN IDENTIQUE AU TITRE */
+/* Styles individuels des GUI */
 .smallGui {
-  /* EXACTEMENT LE MÊME STYLE QUE LE TITRE */
   background: rgba(20, 20, 20, 0.6);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -147,6 +195,44 @@ body::-webkit-scrollbar {
   z-index: 100;
   will-change: transform;
   transform: translateZ(0);
+  
+  /* Transitions pour les effets hover */
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* EFFETS HOVER SUR LES GUI */
+.smallGui:hover {
+  /* Agrandissement léger */
+  transform: translateZ(0) scale(1.08);
+  
+  /* Bordure plus lumineuse */
+  border-color: rgba(255, 255, 255, 0.4);
+  
+  /* Ombre plus intense */
+  box-shadow: 
+    0 0 50px rgba(255, 255, 255, 0.15),
+    0 0 100px rgba(255, 255, 255, 0.08);
+  
+  /* Flou d'arrière-plan intensifié */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  
+  /* Arrière-plan légèrement plus opaque */
+  background: rgba(20, 20, 20, 0.75);
+}
+
+/* Animation de pulsation au survol */
+.smallGui:hover .gui-title-small {
+  animation: hoverPulse 1.5s ease-in-out infinite;
+}
+
+.smallGui:hover .gui-glow {
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.9),
+    0 0 15px rgba(255, 255, 255, 0.9),
+    0 0 30px #fff,
+    0 0 60px #fff,
+    0 0 90px rgba(255, 255, 255, 0.3);
 }
 
 /* ================================================================
@@ -166,6 +252,7 @@ body::-webkit-scrollbar {
   color: #fff;
   font-weight: 700;
   margin-bottom: 10px;
+  transition: all 0.3s ease;
 }
 
 .animated-glow {
@@ -182,6 +269,7 @@ body::-webkit-scrollbar {
     0 0 10px rgba(255, 255, 255, 0.7),
     0 0 20px #fff,
     0 0 40px #fff;
+  transition: text-shadow 0.4s ease;
 }
 
 .gui-subtitle {
@@ -191,6 +279,11 @@ body::-webkit-scrollbar {
   font-style: italic;
   position: relative;
   margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+
+.smallGui:hover .gui-subtitle {
+  color: #fff;
 }
 
 .gui-subtitle::after {
@@ -200,6 +293,13 @@ body::-webkit-scrollbar {
   height: 1px;
   background: rgba(255,255,255,0.3);
   margin: 8px auto 0;
+  transition: all 0.3s ease;
+}
+
+.smallGui:hover .gui-subtitle::after {
+  width: 180px;
+  background: rgba(255,255,255,0.6);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .gui-extra-text {
@@ -208,6 +308,11 @@ body::-webkit-scrollbar {
   color: #888;
   font-style: italic;
   letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.smallGui:hover .gui-extra-text {
+  color: #aaa;
 }
 
 /* ================================================================
@@ -231,10 +336,18 @@ body::-webkit-scrollbar {
   .gui-title-small {
     font-size: 28px;
   }
+  
+  /* Pas d'effets hover complexes sur mobile */
+  .smallGui:hover {
+    transform: translateZ(0) scale(1.02);
+  }
 }
 </style>
 </head>
 <body>
+
+<!-- CURSEUR PERSONNALISÉ -->
+<div id="customCursor"></div>
 
 <!-- TITRE PRINCIPAL -->
 <div id="titleContainer">
@@ -251,20 +364,20 @@ body::-webkit-scrollbar {
   </div>
   
   <div class="smallGui">
-    <div class="gui-title-small gui-glow">Créativité</div>
-    <div class="gui-subtitle">ars longa, vita brevis</div>
+    <div class="gui-title-small gui-glow">Scarlette</div>
+    <div class="gui-subtitle">uxor mea — amica mea</div>
     <div class="gui-extra-text">[soon]</div>
   </div>
   
   <div class="smallGui">
     <div class="gui-title-small gui-glow">Passion</div>
-    <div class="gui-subtitle">cor cordis mei</div>
+    <div class="gui-subtitle">cor — cordis — mei</div>
     <div class="gui-extra-text">[soon]</div>
   </div>
   
   <div class="smallGui">
     <div class="gui-title-small gui-glow">Contact</div>
-    <div class="gui-subtitle">nexus inter nos</div>
+    <div class="gui-subtitle">nexus — inter — nos</div>
     <div class="gui-extra-text">[soon]</div>
   </div>
 </div>
@@ -272,9 +385,49 @@ body::-webkit-scrollbar {
 <script>
 const titleContainer = document.getElementById('titleContainer');
 const fourContainers = document.getElementById('fourContainers');
+const customCursor = document.getElementById('customCursor');
 
-let currentView = 'title'; // 'title' ou 'guis'
-let isTransitioning = false; // Empêche les transitions multiples
+let currentView = 'title';
+let isTransitioning = false;
+
+// ================================================================
+// CURSEUR PERSONNALISÉ
+// ================================================================
+let mouseX = 0;
+let mouseY = 0;
+let cursorX = 0;
+let cursorY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// Animation fluide du curseur avec légère traînée
+function animateCursor() {
+  const dx = mouseX - cursorX;
+  const dy = mouseY - cursorY;
+  
+  cursorX += dx * 0.15; // Facteur de lissage (0.1 = très lent, 1 = instantané)
+  cursorY += dy * 0.15;
+  
+  customCursor.style.left = cursorX - 10 + 'px';
+  customCursor.style.top = cursorY - 10 + 'px';
+  
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+// Détection du survol des GUI pour agrandir le curseur
+const interactiveElements = document.querySelectorAll('.smallGui');
+interactiveElements.forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    customCursor.classList.add('hover');
+  });
+  el.addEventListener('mouseleave', () => {
+    customCursor.classList.remove('hover');
+  });
+});
 
 // ================================================================
 // PÉTALES LUMINEUSES
@@ -327,18 +480,16 @@ function transitionToGuis() {
   isTransitioning = true;
   currentView = 'guis';
   
-  // Cache le titre
   titleContainer.style.opacity = '0';
   titleContainer.style.transform = 'translate(-50%, -150%)';
   titleContainer.style.pointerEvents = 'none';
   
-  // Affiche les GUI
   fourContainers.style.opacity = '1';
   fourContainers.style.pointerEvents = 'auto';
   
   setTimeout(() => {
     isTransitioning = false;
-  }, 800); // Durée de la transition
+  }, 800);
 }
 
 function transitionToTitle() {
@@ -347,11 +498,9 @@ function transitionToTitle() {
   isTransitioning = true;
   currentView = 'title';
   
-  // Cache les GUI
   fourContainers.style.opacity = '0';
   fourContainers.style.pointerEvents = 'none';
   
-  // Affiche le titre
   titleContainer.style.opacity = '1';
   titleContainer.style.transform = 'translate(-50%, -50%)';
   titleContainer.style.pointerEvents = 'auto';
@@ -364,10 +513,8 @@ function transitionToTitle() {
 // Détection de la molette de souris
 window.addEventListener('wheel', (e) => {
   if (e.deltaY > 0) {
-    // Scroll vers le bas → affiche les GUI
     transitionToGuis();
   } else if (e.deltaY < 0) {
-    // Scroll vers le haut → retour au titre
     transitionToTitle();
   }
 }, { passive: true });
@@ -382,7 +529,7 @@ window.addEventListener('touchmove', (e) => {
   const touchEndY = e.touches[0].clientY;
   const diff = touchStartY - touchEndY;
   
-  if (Math.abs(diff) > 50) { // Seuil minimum de mouvement
+  if (Math.abs(diff) > 50) {
     if (diff > 0) {
       transitionToGuis();
     } else {
