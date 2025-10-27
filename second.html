@@ -103,8 +103,9 @@ body::-webkit-scrollbar {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  /* BACKDROP FILTER DEJA EXISTANT */
+  /* Filtre de flou déjà présent sur le grand conteneur */
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); /* Ajout du préfixe pour compatibilité */
   text-align: center;
   transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 10;
@@ -137,8 +138,9 @@ body::-webkit-scrollbar {
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   
-  /* NOUVEAU: Ajout du filtre de flou sur l'arrière-plan */
-  backdrop-filter: blur(6px);
+  /* FLOU DES PÉTALES AMÉLIORÉ: Augmentation à 10px et ajout du préfixe */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
   color: #fff;
   font-size: 24px;
@@ -166,7 +168,7 @@ body::-webkit-scrollbar {
   text-shadow: none; 
 }
 
-/* CLASSE PRINCIPALE AVEC GLOW PULSANT (RESTAURÉ) */
+/* CLASSE PRINCIPALE AVEC GLOW PULSANT */
 .animated-glow {
     /* GLOW de base initial */
     text-shadow: 
