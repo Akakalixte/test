@@ -86,7 +86,7 @@ body::-webkit-scrollbar {
   border-radius: 50%;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); 
   pointer-events: none;
-  z-index: 9; 
+  z-index: 9; /* Position pour que les pétales passent sous les GUIs */
   animation: fall var(--duration) linear infinite;
 }
 
@@ -103,7 +103,7 @@ body::-webkit-scrollbar {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  /* Filtre de flou pour Akakalixte */
+  /* Filtre de flou pour Akakalixte (vérifié) */
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   text-align: center;
@@ -132,16 +132,22 @@ body::-webkit-scrollbar {
 
 /* Styles pour les petits GUI */
 .smallGui {
-  /* CHANGEMENT ICI : MOINS OPAQUE pour rendre le flou plus visible */
+  /* Arrière-plan moins opaque pour mieux voir le flou */
   background: rgba(20,20,20,0.4); 
   padding: 30px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   
-  /* FLOU AMÉLIORÉ */
+  /* FLOU DES PÉTALES AMÉLIORÉ */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  
+  /* FORCE LE CONTEXTE DE RENDU POUR QUE LE FLOU S'APPLIQUE AVEC L'ANIMATION */
+  will-change: backdrop-filter; /* Indicateur de performance */
+  transform: translateZ(0);     /* Force un nouveau contexte d'empilement */
+  z-index: 10;                  /* Assure qu'ils sont au-dessus des pétales (z-index: 9) */
+
 
   color: #fff;
   font-size: 24px;
