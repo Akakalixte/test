@@ -80,14 +80,14 @@ body::-webkit-scrollbar {
   position: fixed;
   top: 0;
   left: 0;
-  width: 8px; /* Taille des pétales */
+  width: 8px; 
   height: 8px;
   background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 50%; /* Forme ronde pour un effet "lumière" */
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); /* Effet de glow */
-  pointer-events: none; /* Pour ne pas bloquer les clics sous les pétales */
-  z-index: 9; /* Sous le titre Akakalixte mais au-dessus du fond */
-  animation: fall var(--duration) linear infinite; /* Animation de chute */
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); 
+  pointer-events: none;
+  z-index: 9; 
+  animation: fall var(--duration) linear infinite;
 }
 
 /* ----------------------------------------------------------------
@@ -103,9 +103,9 @@ body::-webkit-scrollbar {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  /* Filtre de flou déjà présent sur le grand conteneur */
+  /* Filtre de flou pour Akakalixte */
   backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px); /* Ajout du préfixe pour compatibilité */
+  -webkit-backdrop-filter: blur(6px);
   text-align: center;
   transition: opacity 0.2s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 10;
@@ -132,13 +132,14 @@ body::-webkit-scrollbar {
 
 /* Styles pour les petits GUI */
 .smallGui {
-  background: rgba(20,20,20,0.6);
+  /* CHANGEMENT ICI : MOINS OPAQUE pour rendre le flou plus visible */
+  background: rgba(20,20,20,0.4); 
   padding: 30px 50px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 0 30px rgba(255,255,255,0.05);
   
-  /* FLOU DES PÉTALES AMÉLIORÉ: Augmentation à 10px et ajout du préfixe */
+  /* FLOU AMÉLIORÉ */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
