@@ -5,41 +5,110 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Deus — Animam — Tuam — Servet</title>
 <style>
-html,body {
-  height: 100%;
+/* ================================================================
+   STYLES GÉNÉRAUX
+   ================================================================ */
+html {
+  overflow-x: hidden; 
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+body {
+  height: 100vh;
   margin: 0;
   background: #000;
   color: #fff;
-  font-family: 'Times New Roman', serif;
-  overflow: hidden; /* pas de scroll ici */
+  font-family: 'Georgia', serif; 
+  overflow: hidden;
   cursor: none !important; 
+  -ms-overflow-style: none;  
 }
 
-/* Conteneur du texte d'accueil */
-#floatingBox {
-  position: fixed; /* reste à sa place */
+body::-webkit-scrollbar {
+  display: none; 
+}
+
+/* ================================================================
+   CURSEUR PERSONNALISÉ
+   ================================================================ */
+#customCursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease, border-color 0.3s ease;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(255, 255, 255, 0.3),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+#customCursor::after {
+  content: '';
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+#customCursor.hover {
+  transform: scale(1.8);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.8),
+    0 0 40px rgba(255, 255, 255, 0.5),
+    inset 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* ================================================================
+   PREMIÈRE VUE - TEXTE FLOTTANT
+   ================================================================ */
+#firstView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.8s ease-out;
+  pointer-events: auto;
+}
+
+#firstView.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#floatingBox {
   background: rgba(20, 20, 20, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 25px 40px;
   border-radius: 12px;
-  /* box-shadow initial, sera ajusté par JS */
   box-shadow: 0 0 20px rgba(255,255,255,0.05);
-  /* backdrop-filter initial, sera ajusté par JS */
   backdrop-filter: blur(6px);
   text-align: center;
-  /* Transition pour un effet doux des filtres */
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, backdrop-filter 0.15s ease-out;
-  pointer-events: none; 
-  z-index: 10;
+  cursor: none;
+  font-family: 'Times New Roman', serif;
 }
 
 #floatingBox .main {
   font-size: 26px;
   letter-spacing: 2px;
   margin-bottom: 8px;
+  color: #fff;
 }
 
 #floatingBox .sub {
@@ -56,74 +125,971 @@ html,body {
   font-style: italic;
   max-width: 500px;
 }
+
+/* ================================================================
+   SECONDE VUE - AKAKALIXTE
+   ================================================================ */
+#secondView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease-out;
+}
+
+#secondView.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
+@keyframes pulseGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px rgba(255, 255, 255, 0.7),
+      0 0 15px #fff,
+      0 0 30px #fff;
+  }
+  50% {
+    text-shadow: 
+      0 0 10px rgba(255, 255, 255, 1),
+      0 0 20px #fff,
+      0 0 40px #fff,
+      0 0 60px rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes fall {
+  0% {
+    transform: translate(var(--x-start), -100px) rotateZ(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x-end), 100vh) rotateZ(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes hoverPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================================================
+   PÉTALES LUMINEUSES
+   ================================================================ */
+.petal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px; 
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5); 
+  pointer-events: none;
+  z-index: 1;
+  animation: fall var(--duration) linear infinite;
+}
+
+/* ================================================================
+   TITRE PRINCIPAL (GRAND CARRÉ)
+   ================================================================ */
+#titleContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  
+  padding: 40px 60px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  text-align: center;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  z-index: 100;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ================================================================
+   CONTENEUR DES 4 GUI + BOUTON
+   ================================================================ */
+#guisWrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease-out;
+  z-index: 100;
+  will-change: opacity;
+}
+
+#fourContainers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.smallGui {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  
+  padding: 40px 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  color: #fff;
+  text-align: center;
+  min-width: 250px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  will-change: transform;
+  transform: translateZ(0);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.smallGui:hover {
+  transform: translateZ(0) scale(1.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 0 50px rgba(255, 255, 255, 0.15),
+    0 0 100px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  background: rgba(20, 20, 20, 0.75);
+}
+
+.smallGui:hover .gui-title-small {
+  animation: hoverPulse 1.5s ease-in-out infinite;
+}
+
+.smallGui:hover .gui-glow {
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.9),
+    0 0 15px rgba(255, 255, 255, 0.9),
+    0 0 30px #fff,
+    0 0 60px #fff,
+    0 0 90px rgba(255, 255, 255, 0.3);
+}
+
+/* ================================================================
+   CONTENU DES GUI
+   ================================================================ */
+.gui-title {
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.gui-title-small {
+  font-size: 36px;
+  letter-spacing: 3px;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.animated-glow {
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 15px #fff,
+    0 0 30px #fff; 
+  animation: pulseGlow 2.5s infinite alternate ease-in-out; 
+}
+
+.gui-glow {
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 10px rgba(255, 255, 255, 0.7),
+    0 0 20px #fff,
+    0 0 40px #fff;
+  transition: text-shadow 0.4s ease;
+}
+
+.gui-subtitle {
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  color: #ccc;
+  font-style: italic;
+  position: relative;
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+
+.smallGui:hover .gui-subtitle {
+  color: #fff;
+}
+
+.gui-subtitle::after {
+  content: "";
+  display: block;
+  width: 140px;
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+  margin: 8px auto 0;
+  transition: all 0.3s ease;
+}
+
+.smallGui:hover .gui-subtitle::after {
+  width: 180px;
+  background: rgba(255,255,255,0.6);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.gui-extra-text {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #888;
+  font-style: italic;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.smallGui:hover .gui-extra-text {
+  color: #aaa;
+}
+
+/* ================================================================
+   BOUTON INFO
+   ================================================================ */
+#infoButton {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 15px 35px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 20px;
+  letter-spacing: 2px;
+  cursor: none;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  text-shadow: 
+    0 0 5px rgba(255, 255, 255, 0.6),
+    0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+#infoButton:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 0 40px rgba(255, 255, 255, 0.12),
+    0 0 80px rgba(255, 255, 255, 0.06);
+  background: rgba(20, 20, 20, 0.75);
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.9),
+    0 0 15px rgba(255, 255, 255, 0.6),
+    0 0 30px #fff;
+}
+
+/* ================================================================
+   MENU CONTEXTUEL INFO
+   ================================================================ */
+#infoModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: slideIn 0.4s ease-out;
+}
+
+#infoModal.show {
+  display: flex;
+}
+
+#infoContent {
+  background: rgba(20, 20, 20, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 45px 55px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 
+    0 0 50px rgba(255,255,255,0.1),
+    0 0 100px rgba(255,255,255,0.05);
+  max-width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.5s ease-out;
+}
+
+#infoContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+#infoContent::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+
+#infoContent::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+
+#infoContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.info-section {
+  margin-bottom: 40px;
+}
+
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 38px;
+  letter-spacing: 4px;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.7),
+    0 0 15px rgba(255, 255, 255, 0.5),
+    0 0 30px #fff;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  letter-spacing: 1.5px;
+  color: #aaa;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 16px;
+  line-height: 1.6;
+  color: #ccc;
+  letter-spacing: 0.5px;
+}
+
+.info-list li:last-child {
+  border-bottom: none;
+}
+
+.info-list li::before {
+  content: '◆';
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 12px;
+  font-size: 12px;
+}
+
+.info-list li strong {
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+#closeModal {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 30px;
+  color: rgba(255,255,255,0.6);
+  cursor: none;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+#closeModal:hover {
+  color: #fff;
+  transform: scale(1.2);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* ================================================================
+   RESPONSIVE MOBILE (max-width: 768px)
+   ================================================================ */
+@media (max-width: 768px) {
+  body {
+    cursor: auto !important;
+  }
+  
+  #customCursor {
+    display: none;
+  }
+  
+  #floatingBox {
+    max-width: 85%;
+    cursor: pointer;
+  }
+  
+  #titleContainer {
+    padding: 30px 40px;
+    max-width: 85%;
+  }
+  
+  .gui-title {
+    font-size: 32px;
+    letter-spacing: 2px;
+  }
+  
+  .gui-subtitle {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  
+  #guisWrapper {
+    max-width: 85%;
+    overflow-y: auto;
+    max-height: 80vh;
+    padding: 20px 0;
+  }
+  
+  #fourContainers {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .smallGui {
+    min-width: auto;
+    width: 100%;
+    padding: 25px 35px;
+    min-height: 140px;
+  }
+  
+  .gui-title-small {
+    font-size: 26px;
+    letter-spacing: 2px;
+  }
+  
+  .gui-subtitle {
+    font-size: 14px;
+  }
+  
+  .gui-extra-text {
+    font-size: 13px;
+  }
+  
+  .smallGui:hover {
+    transform: translateZ(0) scale(1.02);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .smallGui:hover .gui-title-small {
+    animation: none;
+  }
+  
+  #infoButton {
+    font-size: 18px;
+    padding: 12px 28px;
+    cursor: pointer;
+  }
+  
+  #infoContent {
+    padding: 35px 40px;
+    max-width: 85%;
+    max-height: 75vh;
+  }
+  
+  .section-title {
+    font-size: 32px;
+    letter-spacing: 3px;
+  }
+  
+  .section-subtitle {
+    font-size: 14px;
+  }
+  
+  .info-list li {
+    font-size: 14px;
+  }
+  
+  .petal {
+    width: 6px;
+    height: 6px;
+  }
+  
+  #closeModal {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 480px) {
+  #floatingBox .main {
+    font-size: 22px;
+  }
+  
+  #floatingBox .definition {
+    font-size: 12px;
+  }
+  
+  #titleContainer {
+    padding: 25px 30px;
+  }
+  
+  .gui-title {
+    font-size: 28px;
+  }
+  
+  .gui-title-small {
+    font-size: 22px;
+  }
+  
+  .smallGui {
+    padding: 20px 25px;
+    min-height: 120px;
+  }
+  
+  .gui-subtitle::after {
+    width: 100px;
+  }
+  
+  #infoButton {
+    font-size: 16px;
+    padding: 10px 24px;
+  }
+  
+  #infoContent {
+    padding: 30px 30px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+  }
+  
+  .info-list li {
+    font-size: 13px;
+  }
+}
 </style>
 </head>
 <body>
 
-<div id="floatingBox">
-  <div class="main">Click here...</div>
-  <div class="sub">Deus — animam — tuam — servet</div>
-  <div class="definition">
-    A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
-    is an excessive fear of a specific object or situation that is based on feelings rather than rational causes.
+<!-- CURSEUR PERSONNALISÉ (PC uniquement) -->
+<div id="customCursor"></div>
+
+<!-- PREMIÈRE VUE - ÉCRAN D'ACCUEIL -->
+<div id="firstView">
+  <div id="floatingBox">
+    <div class="main">Click here...</div>
+    <div class="sub">Deus — animam — tuam — servet</div>
+    <div class="definition">
+      A phobia (from the ancient Greek φόβος / phóbos, meaning fear[1], dread[2], or repulsion[3]) 
+      is an excessive fear of a specific object or situation that is based on feelings rather than rational causes.
+    </div>
+  </div>
+</div>
+
+<!-- SECONDE VUE - AKAKALIXTE -->
+<div id="secondView">
+  <!-- TITRE PRINCIPAL -->
+  <div id="titleContainer">
+    <div class="gui-title animated-glow">Akakalixte</div> 
+    <div class="gui-subtitle">Phobia est Arma</div>
+  </div>
+
+  <!-- WRAPPER: 4 GUI + BOUTON INFO -->
+  <div id="guisWrapper">
+    <div id="fourContainers">
+      <div class="smallGui">
+        <div class="gui-title-small gui-glow">Nerd</div>
+        <div class="gui-subtitle">victoria — intelligenti</div>
+        <div class="gui-extra-text">[soon]</div>
+      </div>
+      
+      <div class="smallGui">
+        <div class="gui-title-small gui-glow">Scarlette</div>
+        <div class="gui-subtitle">uxor mea — amica mea</div>
+        <div class="gui-extra-text">[mine]</div>
+      </div>
+      
+      <div class="smallGui">
+        <div class="gui-title-small gui-glow">Passion</div>
+        <div class="gui-subtitle">cor — cordis — mei</div>
+        <div class="gui-extra-text">[soon]</div>
+      </div>
+      
+      <div class="smallGui">
+        <div class="gui-title-small gui-glow">Contact</div>
+        <div class="gui-subtitle">nexus — inter — nos</div>
+        <div class="gui-extra-text">[soon]</div>
+      </div>
+    </div>
+    
+    <button id="infoButton">INFO</button>
+  </div>
+
+  <!-- MODAL INFO -->
+  <div id="infoModal">
+    <div id="infoContent">
+      <span id="closeModal">×</span>
+      
+      <!-- Section 1: Informations Générales -->
+      <div class="info-section">
+        <div class="section-title">INFO</div>
+        <div class="section-subtitle">key — notitia</div>
+        <ul class="info-list">
+          <li><strong>Developer :</strong> Akakalixte</li>
+          <li><strong>Publication date :</strong> November 4, 2025</li>
+          <li><strong>Devise :</strong> Phobia est Arma (Fear is a weapon)</li>
+          <li><strong>Technologies used :</strong> HTML5, CSS3, JavaScript vanilla</li>
+          <li><strong>Design :</strong> Glassmorphism & elegant minimalism</li>
+          <li><strong>Thème :</strong> i don't know ?</li>
+        </ul>
+      </div>
+      
+      <!-- Section 2: Updates -->
+      <div class="info-section">
+        <div class="section-title">UPDATE</div>
+        <div class="section-subtitle">Progressio fit in evolutione</div>
+        <ul class="info-list">
+          <li>Unified single-page experience with smooth transitions</li>
+          <li>Added smooth navigation system between title and GUI</li>
+          <li>Implementation of custom cursor with glow effect</li>
+          <li>Creation of the four main interfaces with effects</li>
+          <li>Integration of luminous petal animations in the background</li>
+          <li>Responsive optimization for mobile and tablet</li>
+          <li>Renaming the UPDATE button to INFO with scrollable sections</li>
+          <li>Added general information section to the website</li>
+          <li>Touch support for mobile navigation</li>
+          <li>Glow effects and smooth transitions</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-const box = document.getElementById('floatingBox');
+// ================================================================
+// ÉLÉMENTS DOM
+// ================================================================
+const firstView = document.getElementById('firstView');
+const secondView = document.getElementById('secondView');
+const floatingBox = document.getElementById('floatingBox');
+const titleContainer = document.getElementById('titleContainer');
+const guisWrapper = document.getElementById('guisWrapper');
+const customCursor = document.getElementById('customCursor');
+const infoButton = document.getElementById('infoButton');
+const infoModal = document.getElementById('infoModal');
+const closeModal = document.getElementById('closeModal');
 
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let currentX = mouseX;
-let currentY = mouseY;
+let currentView = 'title';
+let isTransitioning = false;
+let hasEnteredSecondView = false;
 
-// Pour calculer la vitesse et ajuster le flou
-let lastX = currentX;
-let lastY = currentY;
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-document.addEventListener('mousemove', e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+// ================================================================
+// CURSEUR PERSONNALISÉ (PC UNIQUEMENT)
+// ================================================================
+if (!isMobile) {
+  let mouseX = 0;
+  let mouseY = 0;
+  let cursorX = 0;
+  let cursorY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animateCursor() {
+    const dx = mouseX - cursorX;
+    const dy = mouseY - cursorY;
+    
+    cursorX += dx * 0.15;
+    cursorY += dy * 0.15;
+    
+    customCursor.style.left = cursorX - 10 + 'px';
+    customCursor.style.top = cursorY - 10 + 'px';
+    
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  const interactiveElements = document.querySelectorAll('.smallGui, #infoButton, #closeModal, #floatingBox');
+  interactiveElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      customCursor.classList.add('hover');
+    });
+    el.addEventListener('mouseleave', () => {
+      customCursor.classList.remove('hover');
+    });
+  });
+}
+
+// ================================================================
+// ANIMATION DU FLOATING BOX (PREMIÈRE VUE)
+// ================================================================
+if (!isMobile) {
+  let mouseXFloat = window.innerWidth / 2;
+  let mouseYFloat = window.innerHeight / 2;
+  let currentXFloat = mouseXFloat;
+  let currentYFloat = mouseYFloat;
+  let lastXFloat = currentXFloat;
+  let lastYFloat = currentYFloat;
+
+  document.addEventListener('mousemove', e => {
+    mouseXFloat = e.clientX;
+    mouseYFloat = e.clientY;
+  });
+
+  function animateFloatingBox() {
+    lastXFloat = currentXFloat;
+    lastYFloat = currentYFloat;
+    
+    currentXFloat += (mouseXFloat - currentXFloat) * 0.03;
+    currentYFloat += (mouseYFloat - currentYFloat) * 0.03;
+    
+    const offsetX = (currentXFloat - window.innerWidth / 2) * 0.05;
+    const offsetY = (currentYFloat - window.innerHeight / 2) * 0.05;
+    
+    if (floatingBox) {
+      floatingBox.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    }
+    
+    const deltaX = Math.abs(currentXFloat - lastXFloat);
+    const deltaY = Math.abs(currentYFloat - lastYFloat);
+    const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    const blurAmount = Math.min(speed * 0.5, 2);
+    const shadowSpread = Math.min(speed * 1.5, 30);
+    
+    if (floatingBox) {
+      floatingBox.style.backdropFilter = `blur(${6 + blurAmount}px)`;
+      floatingBox.style.boxShadow = `0 0 ${20 + shadowSpread}px rgba(255,255,255,${0.05 + (blurAmount * 0.02)})`;
+    }
+    
+    requestAnimationFrame(animateFloatingBox);
+  }
+  animateFloatingBox();
+}
+
+// ================================================================
+// PÉTALES LUMINEUSES
+// ================================================================
+const NUM_PETALS = isMobile ? 15 : 30;
+const MIN_DURATION = 10;
+const MAX_DURATION = 20;
+
+function createPetal() {
+  const petal = document.createElement('div');
+  petal.classList.add('petal');
+  document.body.appendChild(petal);
+
+  const xStart = Math.random() * window.innerWidth;
+  const xEnd = xStart + (Math.random() - 0.5) * 400;
+  const duration = Math.random() * (MAX_DURATION - MIN_DURATION) + MIN_DURATION;
+
+  petal.style.left = `${xStart}px`;
+  petal.style.setProperty('--x-start', '0px');
+  petal.style.setProperty('--x-end', `${xEnd - xStart}px`);
+  petal.style.setProperty('--duration', `${duration}s`);
+  petal.style.animationDelay = `-${Math.random() * duration}s`;
+
+  petal.addEventListener('animationend', () => {
+    petal.remove();
+    createPetal();
+  });
+}
+
+for (let i = 0; i < NUM_PETALS; i++) {
+  createPetal();
+}
+
+// ================================================================
+// TRANSITION DE LA PREMIÈRE VUE VERS LA SECONDE
+// ================================================================
+function enterSecondView() {
+  if (hasEnteredSecondView) return;
+  hasEnteredSecondView = true;
+  
+  // Cacher la première vue
+  firstView.classList.add('hidden');
+  
+  // Afficher la seconde vue
+  setTimeout(() => {
+    secondView.classList.add('visible');
+    
+    // Afficher le titre après un court délai
+    setTimeout(() => {
+      titleContainer.style.opacity = '1';
+      titleContainer.style.transform = 'translate(-50%, -50%)';
+    }, 300);
+  }, 800);
+}
+
+// Clic sur le floating box (PC et mobile)
+floatingBox.addEventListener('click', enterSecondView);
+
+// Touch pour mobile
+floatingBox.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  enterSecondView();
 });
 
-function animate() {
-  lastX = currentX; // Stocke la position précédente
-  lastY = currentY;
-
-  currentX += (mouseX - currentX) * 0.03;
-  currentY += (mouseY - currentY) * 0.03;
-
-  const offsetX = (currentX - window.innerWidth / 2) * 0.05;
-  const offsetY = (currentY - window.innerHeight / 2) * 0.05;
-
-  box.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
-
-  // Calcul de la "vitesse" du déplacement de la boîte
-  const deltaX = Math.abs(currentX - lastX);
-  const deltaY = Math.abs(currentY - lastY);
-  const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // Distance parcourue
-
-  // Ajustement du flou et de l'ombre en fonction de la vitesse
-  // Le flou est très léger, max 2px
-  const blurAmount = Math.min(speed * 0.5, 2); // Max 2px de flou
-  const shadowSpread = Math.min(speed * 1.5, 30); // Max 30px d'étalement pour l'ombre
-
-  // On applique le flou sur le backdrop et on change l'ombre
-  // Le flou initial (6px) est toujours là, on l'augmente un peu au mouvement
-  box.style.backdropFilter = `blur(${6 + blurAmount}px)`;
-  box.style.boxShadow = `0 0 ${20 + shadowSpread}px rgba(255,255,255,${0.05 + (blurAmount * 0.02)})`;
-
-  requestAnimationFrame(animate);
-}
-animate();
-
-document.body.addEventListener('click', () => {
-  document.body.style.transition = 'opacity 0.5s ease-out';
-  document.body.style.opacity = '0'; 
-
+// ================================================================
+// NAVIGATION DANS LA SECONDE VUE (TITRE <-> GUI)
+// ================================================================
+function transitionToGuis() {
+  if (isTransitioning || currentView === 'guis' || !hasEnteredSecondView) return;
+  
+  isTransitioning = true;
+  currentView = 'guis';
+  
+  titleContainer.style.opacity = '0';
+  titleContainer.style.transform = 'translate(-50%, -150%)';
+  titleContainer.style.pointerEvents = 'none';
+  
+  guisWrapper.style.opacity = '1';
+  guisWrapper.style.pointerEvents = 'auto';
+  
   setTimeout(() => {
-    window.location.href = 'second.html'; 
-  }, 500); 
+    isTransitioning = false;
+  }, 800);
+}
+
+function transitionToTitle() {
+  if (isTransitioning || currentView === 'title' || !hasEnteredSecondView) return;
+  
+  isTransitioning = true;
+  currentView = 'title';
+  
+  guisWrapper.style.opacity = '0';
+  guisWrapper.style.pointerEvents = 'none';
+  
+  titleContainer.style.opacity = '1';
+  titleContainer.style.transform = 'translate(-50%, -50%)';
+  titleContainer.style.pointerEvents = 'auto';
+  
+  setTimeout(() => {
+    isTransitioning = false;
+  }, 800);
+}
+
+window.addEventListener('wheel', (e) => {
+  if (!scrollingEnabled || !hasEnteredSecondView) return;
+  
+  if (e.deltaY > 0) {
+    transitionToGuis();
+  } else if (e.deltaY < 0) {
+    transitionToTitle();
+  }
+}, { passive: true });
+
+let touchStartY = 0;
+window.addEventListener('touchstart', (e) => {
+  if (!hasEnteredSecondView) return;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  if (!scrollingEnabled || !hasEnteredSecondView) return;
+  
+  const touchEndY = e.touches[0].clientY;
+  const diff = touchStartY - touchEndY;
+  
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      transitionToGuis();
+    } else {
+      transitionToTitle();
+    }
+    touchStartY = touchEndY;
+  }
+}, { passive: true });
+
+// ================================================================
+// MODAL INFO
+// ================================================================
+let scrollingEnabled = true;
+
+function openModal() {
+  infoModal.classList.add('show');
+  scrollingEnabled = false;
+}
+
+function closeModalFunc() {
+  infoModal.classList.remove('show');
+  scrollingEnabled = true;
+}
+
+infoButton.addEventListener('click', openModal);
+closeModal.addEventListener('click', closeModalFunc);
+
+infoModal.addEventListener('click', (e) => {
+  if (e.target === infoModal) {
+    closeModalFunc();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModalFunc();
+  }
 });
 </script>
 </body>
