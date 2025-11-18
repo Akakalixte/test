@@ -731,6 +731,12 @@ body::-webkit-scrollbar {
 <!-- CURSEUR PERSONNALISÉ (PC uniquement) -->
 <div id="customCursor"></div>
 
+<!-- AUDIO (caché) -->
+<audio id="backgroundMusic" loop>
+  <source src="videoplayback.m4a" type="audio/mp4">
+  <source src="videoplayback.mp3" type="audio/mpeg">
+</audio>
+
 <!-- PREMIÈRE VUE - ÉCRAN D'ACCUEIL -->
 <div id="firstView">
   <div id="floatingBox">
@@ -816,6 +822,7 @@ body::-webkit-scrollbar {
           <li>Added general information section to the website</li>
           <li>Touch support for mobile navigation</li>
           <li>Glow effects and smooth transitions</li>
+          <li>Background music integration with autoplay after click</li>
         </ul>
       </div>
     </div>
@@ -835,6 +842,7 @@ const customCursor = document.getElementById('customCursor');
 const infoButton = document.getElementById('infoButton');
 const infoModal = document.getElementById('infoModal');
 const closeModal = document.getElementById('closeModal');
+const backgroundMusic = document.getElementById('backgroundMusic');
 
 let currentView = 'title';
 let isTransitioning = false;
@@ -966,6 +974,11 @@ for (let i = 0; i < NUM_PETALS; i++) {
 function enterSecondView() {
   if (hasEnteredSecondView) return;
   hasEnteredSecondView = true;
+  
+  // Lancer la musique
+  backgroundMusic.play().catch(error => {
+    console.log('Autoplay bloqué:', error);
+  });
   
   // Cacher la première vue
   firstView.classList.add('hidden');
